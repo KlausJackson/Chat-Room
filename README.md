@@ -24,7 +24,7 @@ Libraries and Frameworks:
 
 ## Preview
 
-![Alt Text](Screenshot 2024-01-18 225018.png)
+![Alt Text](example.png)
 
 ## Usage
 
