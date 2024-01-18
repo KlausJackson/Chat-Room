@@ -22,6 +22,10 @@ Libraries and Frameworks:
 - time
 - requests  (You only need this library if you want to connect between multiple machines)
 
+## Preview
+
+![Alt Text](C:\Users\FPT\OneDrive\Hình ảnh\Ảnh chụp màn hình\Screenshot 2024-01-18 225018.png)
+
 ## Usage
 
 I post 2 versions of the chat room, the more advance version currently has cool features like admin role (kick, ban user alias)
