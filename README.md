@@ -3,6 +3,10 @@
 Python implementation of a simple chat room using TCP protocol. <br>
 For fun only. I'm a newbie, please don't throw rocks.
 
+**REALLY IMPORTANT NOTICE**: I have finished the advance chat room version, but it's super buggy and every client got disconnected right after. <br>
+
+- Currently working on fixing it. - 
+
 ## Credits
 
 Original idea and code: [NeuralNine](https://www.youtube.com/@NeuralNine) <br>
