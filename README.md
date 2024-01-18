@@ -15,7 +15,8 @@ Advance version: [Link](https://youtu.be/F_JDA96AdEI?si=naX_kLDcCWYCMohQ)
 
 Special thanks to NeuralNine for his valuable content and tutorials.
 
-When I have time, I'm also gonna add some more cool features like [Erkenbend's advance chat room version](https://github.com/Erkenbend/tcp-chat-room)
+I added timestamp and a welcome at the start when the client connects to the server.
+I'm gonna add more cool features like [Erkenbend's advance chat room version](https://github.com/Erkenbend/tcp-chat-room) 
 
 ## Requirements
 
