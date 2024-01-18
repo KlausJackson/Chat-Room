@@ -44,6 +44,10 @@ I post 2 versions of the chat room, the more advance version currently has cool 
 - You have to run the server.py first to be able to connect the clients together and chat.
 - If you're running the scripts on the same machine, open separated command prompt windows for each scripts.
 - Remember to navigate to the directory containing the .py file first before you run the script.
+  
+  **Tip**:
+  - Open the folder that contains the script you need to run
+  - From the path box, type 'cmd' and command prompt with the path we need will open itself. Or you can copy the path and type command `cd <path>`. Both works.
 
 *To be able to connect multiple machines to one server, follow these steps: <br>
 
