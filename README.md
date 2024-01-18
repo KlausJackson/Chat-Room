@@ -48,7 +48,7 @@ public_ip = get_ip()
 
 ```
 
-**NOTE**: remember to comment out or remove the public_ip = 'localhost'.
+**NOTE**: remember to comment out or remove the `public_ip = 'localhost'`.
 
 ## Features
 
