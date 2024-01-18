@@ -26,7 +26,9 @@ Libraries and Frameworks:
 
 I post 2 versions of the chat room, the more advance version currently has cool features like admin role (kick, ban user alias)
 
-To be able to connect multiple machines to one server, the machine with the server.py file must uncomment all the code I commented. <br>
+To be able to connect multiple machines to one server, follow these steps: <br>
+
+1. The machine with the server.py file must uncomment all the code I commented. <br>
 If you accidentally deleted them, you can download the code again or copy these:
 
 ```python
@@ -50,13 +52,15 @@ public_ip = get_ip()
 
 **NOTE**: remember to comment out or remove the `public_ip = 'localhost'`.
 
+2. The machines with the client.py must uncomment `ip = input('IP address of the server: ')` and remove or comment out `ip = '127.0.0.1'    #localhost`.
+
 ## Features
 
 These commands are for ADMIN accounts only.
 - `/kick` : to kick a user (only kick the user, you can still re-connect)
 - `/ban` : to ban a user alias (which means you can use another alias to get right back in)
 
-That's all I got.
+That's all I got. Enjoy!
 
 
 
