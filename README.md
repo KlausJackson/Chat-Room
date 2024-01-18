@@ -5,12 +5,13 @@ For fun only. I'm a newbie, please don't throw rocks.
 
 ## Credits
 
-Original idea and code: NeuralNine
-His YouTube channel: https://www.youtube.com/@NeuralNine
-Simple version: https://youtu.be/3UOyky9sEQY?si=ZfhIld_oTzGdTsgC
-Advance version: https://youtu.be/F_JDA96AdEI?si=naX_kLDcCWYCMohQ
+Original idea and code: [NeuralNine](https://www.youtube.com/@NeuralNine)
+Simple version: [Link](https://youtu.be/3UOyky9sEQY?si=ZfhIld_oTzGdTsgC)
+Advance version: [Link](https://youtu.be/F_JDA96AdEI?si=naX_kLDcCWYCMohQ)
 
-When I have time, I'm also gonna add some more cool features like https://github.com/Erkenbend/tcp-chat-room
+Special thanks to NeuralNine for his valuable content and tutorials.
+
+When I have time, I'm also gonna add some more cool features like [Erkenbend's advance chat room version](https://github.com/Erkenbend/tcp-chat-room)
 
 ## Requirements
 
@@ -52,8 +53,8 @@ public_ip = get_ip()
 ## Features
 
 These commands are for ADMIN accounts only.
-/kick : to kick a user (only kick the user, you can still re-connect)
-/ban : to ban a user alias (which means you can use another alias to get right back in)
+- `/kick` : to kick a user (only kick the user, you can still re-connect)
+- `/ban` : to ban a user alias (which means you can use another alias to get right back in)
 
 That's all I got.
 
