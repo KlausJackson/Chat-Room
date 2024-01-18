@@ -1,6 +1,6 @@
 # Python_Chat-Room
 
-Python implementation of a simple chat room using TCP protocol.
+Python implementation of a simple chat room using TCP protocol. <br>
 For fun only. I'm a newbie, please don't throw rocks.
 
 ## Credits
@@ -26,7 +26,7 @@ Libraries and Frameworks:
 
 I post 2 versions of the chat room, the more advance version currently has cool features like admin role (kick, ban user alias)
 
-To be able to connect multiple machines to one server, the machine with the server.py file must uncomment all the code I commented.
+To be able to connect multiple machines to one server, the machine with the server.py file must uncomment all the code I commented. <br>
 If you accidentally deleted them, you can download the code again or copy these:
 
 ```python
