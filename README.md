@@ -15,7 +15,7 @@ Advance version: [Link](https://youtu.be/F_JDA96AdEI?si=naX_kLDcCWYCMohQ)
 
 Special thanks to NeuralNine for his valuable content and tutorials.
 
-I added timestamp and a welcome at the start when the client connects to the server.
+I added timestamp and a welcome at the start when the client connects to the server. <br>
 I'm gonna add more cool features like [Erkenbend's advance chat room version](https://github.com/Erkenbend/tcp-chat-room) 
 
 ## Requirements
