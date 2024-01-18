@@ -5,8 +5,8 @@ For fun only. I'm a newbie, please don't throw rocks.
 
 ## Credits
 
-Original idea and code: [NeuralNine](https://www.youtube.com/@NeuralNine)
-Simple version: [Link](https://youtu.be/3UOyky9sEQY?si=ZfhIld_oTzGdTsgC)
+Original idea and code: [NeuralNine](https://www.youtube.com/@NeuralNine) <br>
+Simple version: [Link](https://youtu.be/3UOyky9sEQY?si=ZfhIld_oTzGdTsgC) <br>
 Advance version: [Link](https://youtu.be/F_JDA96AdEI?si=naX_kLDcCWYCMohQ)
 
 Special thanks to NeuralNine for his valuable content and tutorials.
