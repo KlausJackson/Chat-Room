@@ -24,7 +24,11 @@ Libraries and Frameworks:
 
 ## Preview
 
+This is when I run the scripts on the same machine using 3 command prompt windows.
+
 ![Alt Text](example.png)
+
+I haven't tried it on 2 different machines yet.
 
 ## Usage
 
