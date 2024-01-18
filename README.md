@@ -3,7 +3,7 @@
 Python implementation of a simple chat room using TCP protocol.
 For fun only. I'm a newbie, please don't throw rocks.
 
-##Credits
+## Credits
 
 Original idea and code: NeuralNine
 His YouTube channel: https://www.youtube.com/@NeuralNine
@@ -12,7 +12,7 @@ Advance version: https://youtu.be/F_JDA96AdEI?si=naX_kLDcCWYCMohQ
 
 When I have time, I'm also gonna add some more cool features like https://github.com/Erkenbend/tcp-chat-room
 
-##Requirements
+## Requirements
 
 Python 3
 Libraries and Frameworks: 
@@ -21,7 +21,7 @@ Libraries and Frameworks:
 - time
 - requests  (You only need this library if you want to connect between multiple machines)
 
-##Usage
+## Usage
 
 I post 2 versions of the chat room, the more advance version currently has cool features like admin role (kick, ban user alias)
 
@@ -49,7 +49,7 @@ public_ip = get_ip()
 
 **NOTE**: remember to comment out or remove the public_ip = 'localhost'.
 
-##Features
+## Features
 
 These commands are for ADMIN accounts only.
 /kick : to kick a user (only kick the user, you can still re-connect)
