@@ -24,7 +24,7 @@ Libraries and Frameworks:
 
 ## Preview
 
-![Alt Text](C:\Users\FPT\OneDrive\Hình ảnh\Ảnh chụp màn hình\Screenshot 2024-01-18 225018.png)
+![Alt Text](Screenshot 2024-01-18 225018.png)
 
 ## Usage
 
