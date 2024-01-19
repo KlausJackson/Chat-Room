@@ -6,7 +6,7 @@ For fun only. I'm a newbie, please don't throw rocks.
 
 **REALLY IMPORTANT NOTICE**: I have finished the advance chat room version, but it's super buggy and every client got disconnected right after. <br>
 
-- Currently working on fixing it. - 
+- Currently working on fixing it.
 
 ## Credits
 
@@ -61,7 +61,7 @@ If you accidentally deleted them, you can download the code again or copy these:
 import requests
 
 def get_ip():
-    '''This commented code is for long distance connecting.
+    '''This commented code is for connecting many machines.
        Uncomment to use. '''
      try:
          response = requests.get('https://api64.ipify.org?format=json')
