@@ -44,7 +44,7 @@ The advance version has ADMIN role and 6 available commands (description of each
 **NOTE**: 
 - You have to run the server.py first to be able to connect the clients together and chat. <br>
 - If you're running the scripts on the same machine, open separated command prompt windows for each scripts. <br>
-- Remember to change the ban.txt path at line 58, 133 and 215. <br>
+- Remember to change the ban.txt path at line 58, 133 and 215, and change '\' to '\\' for the path to work. <br>
 - Remember to navigate to the directory containing the .py file first before you run the script. <br>
   
   **Tip**:
