@@ -36,6 +36,7 @@ I haven't tried it on 2 different machines yet. <br>
 ## Usage
 
 There are 2 versions of the chat room: simple and advance. <br>
+The simple version has no authorities or commands at all (feel free to add commands by yourself by modifying the code). <br> 
 The advance version has ADMIN role and 6 available commands (description of each command below) <br>
 
 *How to run the code: You can use command prompt and type in `python <name of the file>.py` or you can use other platforms that run python files, as long as you have the python 3 version installed and its necessary libraries I mentioned above. <br>
