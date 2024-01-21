@@ -44,6 +44,7 @@ The advance version has ADMIN role and 6 available commands (description of each
 **NOTE**: 
 - You have to run the server.py first to be able to connect the clients together and chat. <br>
 - If you're running the scripts on the same machine, open separated command prompt windows for each scripts. <br>
+- Remember to change the ban.txt path at line 58, 133 and 215. <br>
 - Remember to navigate to the directory containing the .py file first before you run the script. <br>
   
   **Tip**:
@@ -56,7 +57,6 @@ The advance version has ADMIN role and 6 available commands (description of each
 If you accidentally deleted them, you can download the code again or copy these:
 
 ```python
-
 import requests
 
 def get_ip():
@@ -71,13 +71,11 @@ def get_ip():
          return None
          
 public_ip = get_ip()
-
 ```
 
 **NOTE**: remember to comment out or remove the `public_ip = 'localhost'`.
 
 2. The machines with the client.py must uncomment `ip = input('IP address of the server: ')` and remove or comment out `ip = '127.0.0.1'    #localhost`.
-
 
 ## Features
 
@@ -87,9 +85,13 @@ These commands are for ADMIN only.
 - `/unban` : to unban a user.
 - `/list` : to show list of users who are in the server.
 - `/banned` : to show list of users who are banned.
+- `/pass` : to change your ADMIN password.
+- `/quit` or `/q` : to shut down the server. 
   
 One command that normal users can use but ADMIN can't:  
 - `/alias` : to change your alias.
+
+**NOTE**: the server.py must be running all the time, otherwise everytime you close it and run again, ADMIN password will be back to default: 123. But the banned list (ban.txt) is still the same, you can edit it manually or log in under ADMIN role and use the `/unban` command.
   
 I will never add a function/feature to make someone an admin, there can only be one boss in a server. <br>
 That's all I got. Enjoy!
