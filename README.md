@@ -2,22 +2,18 @@
 
 [![Python Version](https://img.shields.io/badge/python-3.8-blue.svg)](https://www.python.org/downloads/release/python-380/) <br>
 Python implementation of a simple chat room using TCP protocol. <br>
-For fun only. I'm a newbie, please don't throw rocks.
-
-**REALLY IMPORTANT NOTICE**: I have finished the advance chat room version, but it's super buggy and every client got disconnected right after. <br>
-
-- Currently working on fixing it.
+For fun only. I'm a newbie, please don't throw rocks. <br>
 
 ## Credits
 
 Original idea and code: [NeuralNine](https://www.youtube.com/@NeuralNine) <br>
 Simple version: [Link](https://youtu.be/3UOyky9sEQY?si=ZfhIld_oTzGdTsgC) <br>
-Advance version: [Link](https://youtu.be/F_JDA96AdEI?si=naX_kLDcCWYCMohQ)
+Advance version: [Link](https://youtu.be/F_JDA96AdEI?si=naX_kLDcCWYCMohQ) <br>
 
-Special thanks to NeuralNine for his valuable content and tutorials.
+Special thanks to NeuralNine for his valuable content and tutorials. <br>
 
-I added timestamp and a welcome at the start when the client connects to the server. <br>
-I'm gonna add more cool features like [Erkenbend's advance chat room version](https://github.com/Erkenbend/tcp-chat-room) 
+My version is a little or maybe a lot different from NeuralNine. <br>
+`/unban`, `/list`, `/banned` are ideas inspired by [Erkenbend's advance chat room version](https://github.com/Erkenbend/tcp-chat-room) <br>
 
 ## Requirements
 
@@ -26,30 +22,32 @@ Libraries and Frameworks:
 - threading
 - socket
 - time
-- requests  (You only need this library if you want to connect between multiple machines)
+- requests  (You only need this library if you want to connect between multiple machines) <br>
+How to install: open command prompt and type in `pip install <library name>` <br>
 
 ## Preview
 
-This is when I run the scripts on the same machine using 3 command prompt windows.
+This is when I run the scripts on the same machine using 3 command prompt windows. <br>
 
 ![Alt Text](example.png)
 
-I haven't tried it on 2 different machines yet.
+I haven't tried it on 2 different machines yet. <br>
 
 ## Usage
 
-I post 2 versions of the chat room, the more advance version currently has cool features like admin role (kick, ban user alias)
+There are 2 versions of the chat room: simple and advance. <br>
+The advance version has ADMIN role and 6 available commands (description of each command below) <br>
 
-*How to run the code: You can use command prompt and type in `python <name of the file>.py` or you can use other platforms that run python files, as long as you have the python 3 version installed and its necessary libraries I mentioned above.
+*How to run the code: You can use command prompt and type in `python <name of the file>.py` or you can use other platforms that run python files, as long as you have the python 3 version installed and its necessary libraries I mentioned above. <br>
 
 **NOTE**: 
-- You have to run the server.py first to be able to connect the clients together and chat.
-- If you're running the scripts on the same machine, open separated command prompt windows for each scripts.
-- Remember to navigate to the directory containing the .py file first before you run the script.
+- You have to run the server.py first to be able to connect the clients together and chat. <br>
+- If you're running the scripts on the same machine, open separated command prompt windows for each scripts. <br>
+- Remember to navigate to the directory containing the .py file first before you run the script. <br>
   
   **Tip**:
-  - Open the folder that contains the script you need to run
-  - From the path box, type 'cmd' and command prompt with the path we need will open itself. Or you can copy the path and type command `cd <path>`. Both works.
+  - Open the folder that contains the script you need to run. <br>
+  - From the path box, type 'cmd' and command prompt with the path we need will open itself. Or you can copy the path and type command `cd <path>`. Both works. <br>
 
 *To be able to connect multiple machines to one server, follow these steps: <br>
 
@@ -82,10 +80,17 @@ public_ip = get_ip()
 
 ## Features
 
-These commands are for ADMIN accounts only.
-- `/kick` : to kick a user (only kick the user, you can still re-connect)
-- `/ban` : to ban a user alias (which means you can use another alias to get right back in)
-
+These commands are for ADMIN only.
+- `/kick` : to kick a user (only kick the user, you can still re-connect).
+- `/ban` : to ban a user alias (which means you can use another alias to get right back in or you can modify the code to also ban the IP address).
+- `/unban` : to unban a user.
+- `/list` : to show list of users who are in the server.
+- `/banned` : to show list of users who are banned.
+  
+One command that normal users can use but ADMIN can't:  
+- `/alias` : to change your alias.
+  
+I will never add a function/feature to make someone an admin, there can only be one boss in a server. <br>
 That's all I got. Enjoy!
 
 
