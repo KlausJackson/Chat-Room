@@ -10,7 +10,7 @@ addresses = []
 
 
 # def get_ip():
-#    '''This commented code is for long distance connecting.
+#    '''This commented code is for connecting many machines.
 #       Uncomment to use. '''
 #     try:
 #         response = requests.get('https://api64.ipify.org?format=json')
@@ -20,7 +20,7 @@ addresses = []
 #         print(f"Error fetching public IP: {e}")
 #         return None
 # public_ip = get_ip()
-public_ip = 'localhost'     #Comment this line if you want long distance connection.
+public_ip = 'localhost'     #Comment this line.
 
 
 def broadcast(message):
