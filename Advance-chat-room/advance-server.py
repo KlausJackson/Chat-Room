@@ -2,7 +2,6 @@ import threading as th
 import socket as s
 import time
 import requests
-import sys
 import os
 
 
@@ -13,7 +12,6 @@ addresses = []
 with open("E:\\Newfolder\\Files\\Github\\Python_Chat-Room\\Advance-chat-room\\ban.txt", 'r') as f:
     ban = [name.strip() for name in f.readlines()]
 password = '123'
-stop = False
 
 
 # def get_ip():
@@ -31,8 +29,6 @@ public_ip = 'localhost'     #Comment this line if you want long distance connect
 
 
 def stop_server():
-    global stop, clients
-    stop = True
     print('Server shutting down...')
     broadcast('Server shutting down...')
     os._exit(0)
@@ -105,9 +101,6 @@ def connection(client, address, alias):
     now = time.strftime("%H:%M:%S")        
     print(f"[{now}] <{str(address)}> - ({alias}) has joined the chat.")
     while 1:
-        global stop
-        if stop:
-            break
         try:
             msg = message = client.recv(1024).decode('utf-8')
             if msg.startswith('/alias'):
@@ -212,10 +205,7 @@ def start():
     print("Server is running...")
     print(f'Your server IP address is: {public_ip}')
 
-    while 1:   
-        global stop  
-        if stop:
-            break  
+    while 1:    
         client, address = server.accept()
         client.send("alias".encode('utf-8'))
         alias = client.recv(1024).decode('utf-8')
