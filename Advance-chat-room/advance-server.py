@@ -13,26 +13,10 @@ addresses = []
 with open("E:\\Newfolder\\Files\\Github\\Python_Chat-Room\\Advance-chat-room\\ban.txt", 'r') as f:
     ban = [name.strip() for name in f.readlines()]
 password = '123'
-stop = False
-
-
-# def get_ip():
-#    '''This commented code is for long distance connecting.
-#       Uncomment to use. '''
-#     try:
-#         response = requests.get('https://api64.ipify.org?format=json')
-#         data = response.json()
-#         return data['ip']
-#     except Exception as e:
-#         print(f"Error fetching public IP: {e}")
-#         return None
-# public_ip = get_ip()
-public_ip = 'localhost'     #Comment this line if you want long distance connection.
+public_ip = 'localhost'   
 
 
 def stop_server():
-    global stop, clients
-    stop = True
     print('Server shutting down...')
     broadcast('Server shutting down...')
     os._exit(0)
@@ -105,9 +89,6 @@ def connection(client, address, alias):
     now = time.strftime("%H:%M:%S")        
     print(f"[{now}] <{str(address)}> - ({alias}) has joined the chat.")
     while 1:
-        global stop
-        if stop:
-            break
         try:
             msg = message = client.recv(1024).decode('utf-8')
             if msg.startswith('/alias'):
@@ -213,9 +194,6 @@ def start():
     print(f'Your server IP address is: {public_ip}')
 
     while 1:   
-        global stop  
-        if stop:
-            break  
         client, address = server.accept()
         client.send("alias".encode('utf-8'))
         alias = client.recv(1024).decode('utf-8')

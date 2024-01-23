@@ -1,26 +1,12 @@
 import threading as th
 import socket as s
 import time
-import requests
 
 
 clients = []
 aliases = []
 addresses = []
-
-
-# def get_ip():
-#    '''This commented code is for connecting many machines.
-#       Uncomment to use. '''
-#     try:
-#         response = requests.get('https://api64.ipify.org?format=json')
-#         data = response.json()
-#         return data['ip']
-#     except Exception as e:
-#         print(f"Error fetching public IP: {e}")
-#         return None
-# public_ip = get_ip()
-public_ip = 'localhost'     #Comment this line.
+public_ip = 'localhost'    
 
 
 def broadcast(message):
@@ -28,8 +14,7 @@ def broadcast(message):
     
     now = time.strftime("%H:%M:%S")
     if isinstance(message, bytes):
-        message = message.decode('utf-8')  
-          
+        message = message.decode('utf-8')        
     message = f'[{now}] {message}'
     for client in clients:   
         client.send(message.encode('utf-8'))
@@ -60,15 +45,14 @@ def connection(client, address, alias):
 def start():
     '''AF_INET : the address domain of the socket. 
     Indicate that socket can be used for communication between any hosts connected to the Internet.
-    SOCK_STREAM : the type of socket. Means that data or characters are read in a continuous flow.'''
-
+    SOCK_STREAM : the type of socket. Means that data or characters are read in a continuous flow.'''    
     server = s.socket(s.AF_INET, s.SOCK_STREAM)
     server.setsockopt(s.SOL_SOCKET, s.SO_REUSEADDR, 1)
     server.bind((public_ip, 8000))
     server.listen(5)
     print("Server is running...")
     print(f'Your server IP address is: {public_ip}')
-
+    
     while 1:       
         client, address = server.accept()
         client.send("Your alias: ".encode('utf-8'))
