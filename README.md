@@ -27,7 +27,7 @@ How to install: open command prompt and type in `pip install <library name>` <br
 
 ## Preview
 
-This is when I run the scripts on the same machine using 3 command prompt windows. <br>
+This is when I run the simple version scripts on the same machine using 3 command prompt windows. <br>
 
 ![Alt Text](example.png)
 
@@ -37,7 +37,7 @@ I haven't tried it on 2 different machines yet. <br>
 
 There are 2 versions of the chat room: simple and advance. <br>
 The simple version has no authorities or commands at all (feel free to add commands by yourself by modifying the code). <br> 
-The advance version has ADMIN role and 6 available commands (description of each command below) <br>
+The advance version has ADMIN role and 7 available commands (description of each command below) <br>
 
 *How to run the code: You can use command prompt and type in `python <name of the file>.py` or you can use other platforms that run python files, as long as you have the python 3 version installed and its necessary libraries I mentioned above. <br>
 
@@ -60,7 +60,7 @@ If you accidentally deleted them, you can download the code again or copy these:
 import requests
 
 def get_ip():
-    '''This commented code is for connecting many machines.
+     '''This commented code is for connecting many machines.
        Uncomment to use. '''
      try:
          response = requests.get('https://api64.ipify.org?format=json')
@@ -92,7 +92,11 @@ One command that normal users can use but ADMIN can't:
 - `/alias` : to change your alias.
 
 **NOTE**: the server.py must be running all the time, otherwise everytime you close it and run again, ADMIN password will be back to default: 123. But the banned list (ban.txt) is still the same, you can edit it manually or log in under ADMIN role and use the `/unban` command.
-  
+
+##The End
+
+If you have any problem while running the code, feel free to file an issue. <br>
+
 I will never add a function/feature to make someone an admin, there can only be one boss in a server. <br>
 That's all I got. Enjoy!
 

@@ -2,7 +2,6 @@ import threading as th
 import socket as s
 import time
 import requests
-import sys
 import os
 
 
@@ -13,7 +12,24 @@ addresses = []
 with open("E:\\Newfolder\\Files\\Github\\Python_Chat-Room\\Advance-chat-room\\ban.txt", 'r') as f:
     ban = [name.strip() for name in f.readlines()]
 password = '123'
+<<<<<<< HEAD
 public_ip = 'localhost'   
+=======
+
+
+# def get_ip():
+#     '''This commented code is for long distance connecting.
+#       Uncomment to use. '''
+#     try:
+#         response = requests.get('https://api64.ipify.org?format=json')
+#         data = response.json()
+#         return data['ip']
+#     except Exception as e:
+#         print(f"Error fetching public IP: {e}")
+#         return None
+# public_ip = get_ip()
+public_ip = 'localhost'     #Comment this line if you want long distance connection.
+>>>>>>> d2a88ffddb05f95b9428d9b5ab0003c5a1eb9e8c
 
 
 def stop_server():
@@ -193,7 +209,11 @@ def start():
     print("Server is running...")
     print(f'Your server IP address is: {public_ip}')
 
+<<<<<<< HEAD
     while 1:   
+=======
+    while 1:    
+>>>>>>> d2a88ffddb05f95b9428d9b5ab0003c5a1eb9e8c
         client, address = server.accept()
         client.send("alias".encode('utf-8'))
         alias = client.recv(1024).decode('utf-8')

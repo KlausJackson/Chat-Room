@@ -6,7 +6,24 @@ import time
 clients = []
 aliases = []
 addresses = []
+<<<<<<< HEAD
 public_ip = 'localhost'    
+=======
+
+
+# def get_ip():
+#     '''This commented code is for connecting many machines.
+#       Uncomment to use. '''
+#     try:
+#         response = requests.get('https://api64.ipify.org?format=json')
+#         data = response.json()
+#         return data['ip']
+#     except Exception as e:
+#         print(f"Error fetching public IP: {e}")
+#         return None
+# public_ip = get_ip()
+public_ip = 'localhost'     #Comment this line.
+>>>>>>> d2a88ffddb05f95b9428d9b5ab0003c5a1eb9e8c
 
 
 def broadcast(message):
