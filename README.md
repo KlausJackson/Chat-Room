@@ -60,7 +60,7 @@ If you accidentally deleted them, you can download the code again or copy these:
 import requests
 
 def get_ip():
-    '''This commented code is for connecting many machines.
+     '''This commented code is for connecting many machines.
        Uncomment to use. '''
      try:
          response = requests.get('https://api64.ipify.org?format=json')
