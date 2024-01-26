@@ -13,7 +13,7 @@ Advance version: [Link](https://youtu.be/F_JDA96AdEI?si=naX_kLDcCWYCMohQ) <br>
 Special thanks to NeuralNine for his valuable content and tutorials. <br>
 
 My version is a little or maybe a lot different from NeuralNine. <br>
-`/unban`, `/list`, `/banned` are ideas inspired by [Erkenbend's advance chat room version](https://github.com/Erkenbend/tcp-chat-room) <br>
+`/unban`, `/list`, `/banned`, `/quit` are ideas inspired by [Erkenbend's advance chat room version](https://github.com/Erkenbend/tcp-chat-room) <br>
 
 ## Requirements
 
@@ -22,7 +22,6 @@ Libraries and Frameworks:
 - threading
 - socket
 - time
-- requests  (You only need this library if you want to connect between multiple machines) <br>
 How to install: open command prompt and type in `pip install <library name>` <br>
 
 ## Preview
@@ -50,32 +49,7 @@ The advance version has ADMIN role and 7 available commands (description of each
   **Tip**:
   - Open the folder that contains the script you need to run. <br>
   - From the path box, type 'cmd' and command prompt with the path we need will open itself. Or you can copy the path and type command `cd <path>`. Both works. <br>
-
-*To be able to connect multiple machines to one server, follow these steps: <br>
-
-1. The machine with the server.py file must uncomment all the code I commented. <br>
-If you accidentally deleted them, you can download the code again or copy these:
-
-```python
-import requests
-
-def get_ip():
-     '''This commented code is for connecting many machines.
-       Uncomment to use. '''
-     try:
-         response = requests.get('https://api64.ipify.org?format=json')
-         data = response.json()
-         return data['ip']
-     except Exception as e:
-         print(f"Error fetching public IP: {e}")
-         return None
-         
-public_ip = get_ip()
-```
-
-**NOTE**: remember to comment out or remove the `public_ip = 'localhost'`.
-
-2. The machines with the client.py must uncomment `ip = input('IP address of the server: ')` and remove or comment out `ip = '127.0.0.1'    #localhost`.
+  - To connect the clients together from other machines, get the public IP of the machine that runs server.py and edit `public_ip = 'localhost'`. The machines with the client.py can uncomment `ip = input('IP address of the server: ')` and remove or comment out `ip = '127.0.0.1'    #localhost` or just edit it.
 
 ## Features
 
