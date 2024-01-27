@@ -26,7 +26,7 @@ How to install: open command prompt and type in `pip install <library name>` <br
 
 ## Preview
 
-This is when I run the simple version scripts on the same machine using 3 command prompt windows. <br>
+Preview of the simple version scripts on the same machine using 3 command prompt windows. <br>
 
 ![Alt Text](example.png)
 
