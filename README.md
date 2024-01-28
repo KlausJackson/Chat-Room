@@ -21,7 +21,7 @@ Python 3
 Libraries and Frameworks: 
 - threading
 - socket
-- time
+- time <br>
 How to install: open command prompt and type in `pip install <library name>` <br>
 
 ## Preview
