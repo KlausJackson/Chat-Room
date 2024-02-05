@@ -67,7 +67,7 @@ One command that normal users can use but ADMIN can't:
 
 **NOTE**: the server.py must be running all the time, otherwise everytime you close it and run again, ADMIN password will be back to default: 123. But the banned list (ban.txt) is still the same, you can edit it manually or log in under ADMIN role and use the `/unban` command.
 
-##The End
+## The End
 
 If you have any problem while running the code, feel free to file an issue. <br>
 
