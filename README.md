@@ -13,7 +13,7 @@ Advance version: [Link](https://youtu.be/F_JDA96AdEI?si=naX_kLDcCWYCMohQ) <br>
 Special thanks to NeuralNine for his valuable content and tutorials. <br>
 
 My version is a little or maybe a lot different from NeuralNine. <br>
-`/unban`, `/list`, `/banned`, `/quit` are ideas inspired by [Erkenbend's advance chat room version](https://github.com/Erkenbend/tcp-chat-room) <br>
+`/unban`, `/list`, `/banned`, `/quit` are ideas inspired by [Erkenbend's advance chat room version](https://github.com/Erkenbend/tcp-chat-room). <br>
 
 ## Requirements
 
@@ -65,7 +65,7 @@ These commands are for ADMIN only.
 One command that normal users can use but ADMIN can't:  
 - `/alias` : to change your alias.
 
-**NOTE**: the server.py must be running all the time, otherwise everytime you close it and run again, ADMIN password will be back to default: 123. But the banned list (ban.txt) is still the same, you can edit it manually or log in under ADMIN role and use the `/unban` command.
+**NOTE**: the server.py must be running all the time, otherwise every time you close it and run again, ADMIN password will be back to default: 123. But the banned list (ban.txt) is still the same, you can edit it manually or log in under ADMIN role and use the `/unban` command.
 
 ## The End
 
