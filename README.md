@@ -1,6 +1,5 @@
 # Python_Chat-Room
 
-[![Python Version](https://img.shields.io/badge/python-3.8-blue.svg)](https://www.python.org/downloads/release/python-380/) <br>
 Python implementation of a simple chat room using TCP protocol. <br>
 For fun only. I'm a newbie, please don't throw rocks. <br>
 
@@ -17,7 +16,7 @@ My version is a little or maybe a lot different from NeuralNine. <br>
 
 ## Requirements
 
-Python 3
+Python 3.8 or higher <br>
 Libraries and Frameworks: 
 - threading
 - socket
