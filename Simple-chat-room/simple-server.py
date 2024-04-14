@@ -1,12 +1,33 @@
 import threading as th
 import socket as s
 import time
+import subprocess
+import re
 
+def get_public_ip():
+    try:
+        # Run ipconfig command to get network interface information
+        result = subprocess.run(['ipconfig'], capture_output=True, text=True)
+        output = result.stdout
 
+        # Use regular expressions to find IPv4 address in the output
+        ipv4_pattern = r'IPv4 Address[.\s]+:\s+(\d+\.\d+\.\d+\.\d+)'
+        match = re.search(ipv4_pattern, output)
+
+        if match:
+            ipv4_address = match.group(1)
+            return ipv4_address
+        else:
+            print("IPv4 address not found.")
+            return None
+    except Exception as e:
+        print(f"An error occurred: {e}")
+        return None
+    
 clients = []
 aliases = []
 addresses = []
-public_ip = 'localhost'    
+public_ip = get_public_ip()    
 
 
 def broadcast(message):

@@ -1,18 +1,44 @@
-import threading as th
-import socket as s
-import time
-import requests
-import os
+import threading as th, socket as s, time, subprocess, re, os
 
+
+def get_public_ip():
+    try:
+        result = subprocess.run(['ipconfig'], capture_output=True, text=True)
+        output = result.stdout
+        ipv4_pattern = r'IPv4 Address[.\s]+:\s+(\d+\.\d+\.\d+\.\d+)'
+        match = re.search(ipv4_pattern, output)
+
+        if match:
+            ipv4_address = match.group(1)
+            return ipv4_address
+        else:
+            print("IPv4 address not found.")
+            return None
+    except Exception as e:
+        print(f"An error occurred: {e}")
+        return None
 
 clients = []
 aliases = []
 addresses = []
-#Change the path for ban.txt here
-with open("ban.txt", 'r') as f:
-    ban = [name.strip() for name in f.readlines()]
+
+def get_ban():
+    ban = {}
+    try:
+        with open("ban.txt", 'r') as f:
+            for line in f:
+                parts = line.strip().split()
+                if len(parts) == 2:
+                    username, ip_address = parts
+                    ban[username] = ip_address
+    except Exception as e:
+        print(f"An error occurred while reading ban.txt: {e}")
+    return ban
+    
+        
 password = '123'
-public_ip = 'localhost'   
+public_ip = get_public_ip()  # edit here
+#example: public_ip = 'localhost' 
 
 
 def stop_server():
@@ -30,6 +56,9 @@ def change_pass(passwd, client):
     
 
 def change_alias(alias, client, address):
+    if alias in aliases:
+        client.send('This alias has been taken.'.econde('utf-8'))
+        return
     old_alias = aliases[clients.index(client)]
     broadcast(f'{old_alias} has changed to {alias}.')
     now = time.strftime("%H:%M:%S")
@@ -38,12 +67,12 @@ def change_alias(alias, client, address):
 
 
 def unban(user, address):
+    ban = get_ban()
     if user in ban:
-        ban.remove(user)
-        #Change the path for ban.txt here
+        del ban[user]
         with open("ban.txt", 'w') as f:
-            for banned in ban:
-                f.write(f'{banned}\n')
+            for username, address in ban.items():
+                f.write(f'{username} {address}\n')
                 
         now = time.strftime("%H:%M:%S")
         print(f'[{now}] <{address}> - {user} has been unbanned.')
@@ -105,10 +134,10 @@ def connection(client, address, alias):
                         client.send('Command was refused.'.encode('utf-8'))
                 
                 elif msg.startswith('/banned'):
+                    ban = get_ban()
                     if aliases[clients.index(client)].upper() == 'ADMIN':
-                        print('Total: ', len(ban))
+                        client.send(f'Total: {len(ban)}'.encode('utf-8'))
                         for index, k in enumerate(ban, start=1):
-                            print(f'{index}. {k}')
                             client.send(f'{index}. {k}'.encode('utf-8')) 
                     else:
                         client.send('Command was refused.'.encode('utf-8'))                   
@@ -118,13 +147,12 @@ def connection(client, address, alias):
                         user = msg[5:]
                         if user in aliases:
                             kick(user, address, client)
-                            ban.append(user)   
+                            ban[user] = address   
                                                      
-                            #Change the path for ban.txt here
                             with open("ban.txt",'a') as f:
-                                f.write(f'{user}\n')                            
+                                f.write(f'{user} {address}\n')                            
                             now = time.strftime("%H:%M:%S")
-                            print(f'[{now}] <{address}> {user} was banned.')    
+                            print(f'[{now}] <{address}> - {user} was banned.')    
                             broadcast(f'{user} was banned by ADMIN.')  
                         else:
                             client.send(f'User {user} doesn\'t exist.'.encode('utf-8'))   
@@ -152,11 +180,10 @@ def connection(client, address, alias):
                 
                 elif msg.startswith('/list'):
                     if aliases[clients.index(client)].upper() == 'ADMIN':
-                        print('Total: ', len(clients))
+                        client.send(f'Total: {len(clients)}'.encode('utf-8'))
                         for k, (ad, al) in enumerate(zip(addresses, aliases), start=1):
-                            #Also printing in the server screen to avoid interuption from messages of other clients.
-                            print(f'{k}. <{ad}> {al}')                             
-                            client.send(f'{k}. <{ad}> {al}'.encode('utf'))
+                            #Also printing in the server screen to avoid interuption from messages of other clients.                           
+                            client.send(f'{k}. <{ad}> {al}'.encode('utf-8'))
                             
                     else:
                         client.send('Command was refused.'.encode('utf-8'))                                                            
@@ -187,8 +214,12 @@ def start():
 
     server = s.socket(s.AF_INET, s.SOCK_STREAM)
     server.setsockopt(s.SOL_SOCKET, s.SO_REUSEADDR, 1)
-    server.bind((public_ip, 8000))
-    server.listen(5)
+    try:
+        server.bind((public_ip, 8000))
+    except Exception as e:
+        print(f'An error occurred: {e}.')
+        print("You should try to change the public_ip to 'localhost' at line 40.")
+    server.listen(30)
     print("Server is running...")
     print(f'Your server IP address is: {public_ip}')
 
@@ -196,11 +227,9 @@ def start():
         client, address = server.accept()
         client.send("alias".encode('utf-8'))
         alias = client.recv(1024).decode('utf-8')
-        #Change the path for ban.txt here
-        with open("ban.txt",'r') as f:
-            bans = f.readlines()
+        ban = get_ban()
             
-        if alias+'\n' in bans:
+        if alias in ban or address in ban.values():
             client.send('ban'.encode('utf-8'))
             client.close()
             continue            

@@ -2,8 +2,8 @@ import threading as th
 import socket as s
 import os
 
-# ip = input('IP address of the server: ')
-ip = '127.0.0.1'    #localhost
+ip = input('IP address of the server: ')
+# ip = '127.0.0.1'    #localhost
 client = s.socket(s.AF_INET, s.SOCK_STREAM)
 alias = input("What do you wish to be called? - ") 
 if alias.upper() == 'ADMIN':
