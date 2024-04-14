@@ -9,7 +9,7 @@ clients = []
 aliases = []
 addresses = []
 #Change the path for ban.txt here
-with open("E:\\Newfolder\\Files\\Github\\Python_Chat-Room\\Advance-chat-room\\ban.txt", 'r') as f:
+with open("ban.txt", 'r') as f:
     ban = [name.strip() for name in f.readlines()]
 password = '123'
 public_ip = 'localhost'   
@@ -41,7 +41,7 @@ def unban(user, address):
     if user in ban:
         ban.remove(user)
         #Change the path for ban.txt here
-        with open("E:\\Newfolder\\Files\\Github\\Python_Chat-Room\\Advance-chat-room\\ban.txt", 'w') as f:
+        with open("ban.txt", 'w') as f:
             for banned in ban:
                 f.write(f'{banned}\n')
                 
@@ -121,7 +121,7 @@ def connection(client, address, alias):
                             ban.append(user)   
                                                      
                             #Change the path for ban.txt here
-                            with open("E:\\Newfolder\\Files\\Github\\Python_Chat-Room\\Advance-chat-room\\ban.txt",'a') as f:
+                            with open("ban.txt",'a') as f:
                                 f.write(f'{user}\n')                            
                             now = time.strftime("%H:%M:%S")
                             print(f'[{now}] <{address}> {user} was banned.')    
@@ -197,7 +197,7 @@ def start():
         client.send("alias".encode('utf-8'))
         alias = client.recv(1024).decode('utf-8')
         #Change the path for ban.txt here
-        with open("E:\\Newfolder\\Files\\Github\\Python_Chat-Room\\Advance-chat-room\\ban.txt",'r') as f:
+        with open("ban.txt",'r') as f:
             bans = f.readlines()
             
         if alias+'\n' in bans:
