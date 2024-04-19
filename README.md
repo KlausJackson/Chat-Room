@@ -1,5 +1,5 @@
 # Python_Chat-Room
-[![Python version](https://img.shields.io/badge/Python-3776AB?style=flat&logo=python&logoColor=white)](https://img.shields.io/badge) ![License](https://img.shields.io/badge/License-MIT-blue.svg) <br>
+[![Python version](https://img.shields.io/badge/Python-3776AB?style=flat&logo=python&logoColor=white)](https://shields.io/) ![License](https://img.shields.io/badge/License-MIT-blue.svg) <br>
 Python implementation of a simple chat room using TCP protocol. <br>
 For fun only. I'm a newbie, please don't throw rocks. <br>
 
