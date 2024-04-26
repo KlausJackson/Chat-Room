@@ -18,6 +18,28 @@ def get_public_ip():
         print(f"An error occurred: {e}")
         return None
 
+
+help = """
+These commands are for ADMIN only:
+
+/kick : to kick a user.
+/ban : to ban a user (only ban the alias if this is a v1 server, ban alias along with IP address if this is a v2 server).
+/unban : to unban a user.
+/list : to show list of users who are in the server.
+/banned : to show list of users who are banned.
+/pass : to change your ADMIN password.
+/quit or /q : to shut down the server.
+
+One command that normal users can use but ADMIN can't: 
+/alias : to change your alias.
+
+Author: Klaus Jackson (https://github.com/KlausJackson)
+Idea and original code: https://youtu.be/F_JDA96AdEI?si=naX_kLDcCWYCMohQ
+For more infomation about this TCP Chat Room, visit https://github.com/KlausJackson/Chat-Room
+
+"""
+
+
 clients = []
 aliases = []
 addresses = []
@@ -181,10 +203,17 @@ def connection(client, address, alias):
                             client.send(f'{k}. <{ad}> {al}\n'.encode('utf-8'))
                             
                     else:
-                        client.send('Command was refused.'.encode('utf-8'))                                                            
+                        client.send('Command was refused.'.encode('utf-8'))     
+                        
+                elif msg.startswith('/help'):
+                    if aliases[clients.index(client)].upper() == 'ADMIN':        
+                        client.send(help.encode('utf-8'))
+                    else:
+                        client.send('Command was refused.'.encode('utf-8'))    
+                                                                                                       
                 else:
                     if aliases[clients.index(client)].upper() == 'ADMIN':
-                        client.send('Available commands for ADMIN: /list, /ban, /banned, /unban, /kick'.encode('utf-8'))                                                                                                                            
+                        client.send('Available commands for ADMIN: /list, /ban, /banned, /unban, /kick, /q or /quit, /help'.encode('utf-8'))                                                                                                                            
             else:                                        
                 broadcast(message)
                                

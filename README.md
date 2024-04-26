@@ -59,7 +59,7 @@ There are 2 versions of the chat room: simple and advance. <br>
 
 These commands are for ADMIN only:
 - `/kick` : to kick a user (only kick the user, you can still re-connect).
-- `/ban` : to ban a user alias (which means you can use another alias to get right back in or you can modify the code to also ban the IP address).
+- `/ban` : to ban a user (only ban the alias if it's a v1 server, ban alias along with IP address if it's a v2 server).
 - `/unban` : to unban a user.
 - `/list` : to show list of users who are in the server.
 - `/banned` : to show list of users who are banned.
