@@ -65,6 +65,7 @@ These commands are for ADMIN only:
 - `/banned` : to show list of users who are banned.
 - `/pass` : to change your ADMIN password.
 - `/quit` or `/q` : to shut down the server. 
+- `/help` : to show detail description of all the commands available.
   
 One command that normal users can use but ADMIN can't:  
 - `/alias` : to change your alias.
