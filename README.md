@@ -21,7 +21,7 @@ Libraries and Frameworks:
 - threading
 - socket
 - time <br>
-How to install: open command prompt and type in `pip install <library name>` <br>
+How to install: open terminal and type `pip install <library name>`. <br>
 
 ## Preview
 
@@ -29,30 +29,25 @@ Preview of the simple version scripts on the same machine using 3 command prompt
 
 ![Alt Text](example.png)
 
-I don't recommend using '/ban', '/unban' on the same machine (even with virtual machine) because I made it to ban the alias/username and THE IP ADDRESS too. You can modify the code for it to only ban alias/username, tutorial below in ##Usage. <br>
-
 ## Usage
 
 There are 2 versions of the chat room: simple and advance. <br>
-The simple version has no authorities or commands at all (feel free to add commands by yourself by modifying the code). <br> 
-The advance version has ADMIN role and 7 available commands (description of each command below) <br>
+* The simple version: has no authorities or commands at all. <br> 
+* The advance version: has ADMIN role, 7 available commands (description of each command below) and 2 small versions. <br>
+  * v1: to connect dfference machines because `/ban` also bans IP address. <br>
+  * v2: can be used to run on the same machines with multiple terminal windows, `/ban` only bans alias, just log in under another alias. <br>
 
-*How to run the code: You can use command prompt and type in `python <name of the file>.py` (`python3` on Linux/MacOS) or you can use other platforms that run python files, as long as you have the python 3 version installed and its necessary libraries I mentioned above. <br>
+*How to run the code: open the terminal in the location where you installed the code and type `python3 <name of the file>.py`. <br>
 
 **NOTE**: 
 - You have to run the server.py first to be able to connect the clients together and chat. <br>
-- If you're running the scripts on the same machine, open separated command prompt windows for each scripts. <br>
+- If you're running the scripts on the same machine, open separated terminal windows for each scripts. <br>
 - Remember to navigate to the directory containing the .py file first before you run the script. <br>
-- DO NOT USE '/ban', '/unban' on the same machine (even with virtual machine) because I made it to ban the alias/username and THE IP ADDRESS too. <br>
+- ADMIN password resets to 123 when you run `server.py`.
   
   **Tip**:
   - Open the folder that contains the script you need to run. <br>
   - From the path box, type 'cmd' and command prompt with the path we need will open itself. Or you can copy the path and type command `cd <path>`. Both works. <br>
-  - To connect the clients together from other machines, get the public IP of the machine that runs server.py and edit `public_ip = 'localhost'`. The machines with the client.py can uncomment `ip = input('IP address of the server: ')` and remove or comment out `ip = '127.0.0.1'    #localhost` or just edit it.
-
-**How to modify `/ban` and `/unban` to use it on the same machine**: I'm too lazy to list everything that needs to be changed. But the fastest way is to write a new `/ban` (line 145), `/unban` (line 69 + 162), line 232 (this line is to check if user & IP address in ban list) and probaly `/banned` (line 136).
-
-HAPPY CODING EVERYONE!
 
 ## Features
 

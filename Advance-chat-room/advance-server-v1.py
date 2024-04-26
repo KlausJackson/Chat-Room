@@ -25,14 +25,14 @@ addresses = []
 def get_ban():
     ban = {}
     try:
-        with open("ban.txt", 'r') as f:
+        with open("ban-v1.txt", 'r') as f:
             for line in f:
                 parts = line.strip().split()
                 if len(parts) == 2:
                     username, ip_address = parts
                     ban[username] = ip_address
     except Exception as e:
-        print(f"An error occurred while reading ban.txt: {e}")
+        print(f"An error occurred while reading ban-v1.txt: {e}")
     return ban
     
         
@@ -57,7 +57,7 @@ def change_pass(passwd, client):
 
 def change_alias(alias, client, address):
     if alias in aliases:
-        client.send('This alias has been taken.'.econde('utf-8'))
+        client.send('This alias has been taken.'.encode('utf-8'))
         return
     old_alias = aliases[clients.index(client)]
     broadcast(f'{old_alias} has changed to {alias}.')
@@ -66,19 +66,19 @@ def change_alias(alias, client, address):
     aliases[clients.index(client)] = alias
 
 
-def unban(user, address):
+def unban(user, address, client):
     ban = get_ban()
     if user in ban:
         del ban[user]
-        with open("ban.txt", 'w') as f:
+        with open("ban-v1.txt", 'w') as f:
             for username, address in ban.items():
                 f.write(f'{username} {address}\n')
                 
         now = time.strftime("%H:%M:%S")
-        print(f'[{now}] <{address}> - {user} has been unbanned.')
+        client.send(f'[{now}] <{address}> - {user} has been unbanned.'.encode('utf-8'))
         broadcast(f'{user} has been unbanned.')
     else:
-        print(f'User {user} is not in the banned users list.')
+        client.send(f'User {user} is not in the banned users list.'.encode('utf-8'))
         
 
 def kick(user, address, client):
@@ -149,7 +149,7 @@ def connection(client, address, alias):
                             kick(user, address, client)
                             ban[user] = address   
                                                      
-                            with open("ban.txt",'a') as f:
+                            with open("ban-v1.txt",'a') as f:
                                 f.write(f'{user} {address}\n')                            
                             now = time.strftime("%H:%M:%S")
                             print(f'[{now}] <{address}> - {user} was banned.')    
@@ -162,7 +162,7 @@ def connection(client, address, alias):
                 elif msg.startswith('/unban'):
                     if aliases[clients.index(client)].upper() == 'ADMIN':
                         user = msg[7:]
-                        unban(user, address)            
+                        unban(user, address, client)            
                     else:
                         client.send('Command was refused.'.encode('utf-8')) 
                 
@@ -183,7 +183,7 @@ def connection(client, address, alias):
                         client.send(f'Total: {len(clients)}'.encode('utf-8'))
                         for k, (ad, al) in enumerate(zip(addresses, aliases), start=1):
                             #Also printing in the server screen to avoid interuption from messages of other clients.                           
-                            client.send(f'{k}. <{ad}> {al}'.encode('utf-8'))
+                            client.send(f'{k}. <{ad}> {al}\n'.encode('utf-8'))
                             
                     else:
                         client.send('Command was refused.'.encode('utf-8'))                                                            

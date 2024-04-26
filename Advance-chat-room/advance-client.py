@@ -55,9 +55,8 @@ def typing():
                     print('You can\'t do that, you\'re not an ADMIN.')
                 else:    
                     client.send(message[len(alias) + 3:].encode('utf-8'))
-                    print(f'You\'ve changed your alias from {alias} to {message[len(alias) + 3 + 7:]}')
-                    alias = message[len(alias) + 3 + 7:]
-                    
+                    alias = message[len(alias) + 3 + 7:]  
+                                  
             elif alias.upper() == 'ADMIN':
                 if message[len(alias) + 3:].startswith('/pass'):
                     client.send(message[len(alias) + 3:].encode('utf-8'))    
