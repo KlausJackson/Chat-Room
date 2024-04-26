@@ -37,8 +37,7 @@ def get_ban():
     
         
 password = '123'
-public_ip = get_public_ip()  # edit here
-#example: public_ip = 'localhost' 
+public_ip = get_public_ip()
 
 
 def stop_server():
