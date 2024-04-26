@@ -49,7 +49,9 @@ def get_ban():
     try:
         with open("ban-v2.txt", 'r') as f:
             usernames = f.readlines()
-            ban.append(usernames)
+            ban.extend(usernames)
+            # for line in f:
+            #     ban.append(line)    # this approach is also ok to use.        
     except Exception as e:
         print(f"An error occurred while reading ban-v2.txt: {e}")
     return ban
@@ -156,8 +158,11 @@ def connection(client, address, alias):
                     ban = get_ban()
                     if aliases[clients.index(client)].upper() == 'ADMIN':
                         client.send(f'Total: {len(ban)}'.encode('utf-8'))
-                        for index, k in enumerate(ban, start=1):
-                            client.send(f'{index}. {k}'.encode('utf-8')) 
+                        if len(ban) == 1:
+                            client.send(f'1. {ban[0]}'.encode('utf-8'))
+                        else:
+                            for index, k in enumerate(ban, start=1):
+                                client.send(f'{index}. {k}'.encode('utf-8')) 
                     else:
                         client.send('Command was refused.'.encode('utf-8'))                   
                     
