@@ -228,7 +228,7 @@ def start():
         alias = client.recv(1024).decode('utf-8')
         ban = get_ban()
             
-        if alias in ban or address in ban.values():
+        if alias in ban or address in ban.values() or alias in aliases or alias == '':
             client.send('ban'.encode('utf-8'))
             client.close()
             continue            

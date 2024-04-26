@@ -76,8 +76,13 @@ def start():
     
     while 1:       
         client, address = server.accept()
-        client.send("Your alias: ".encode('utf-8'))
+        client.send("alias".encode('utf-8'))
         alias = client.recv(1024).decode('utf-8')
+                   
+        if alias in aliases:
+            client.send("no".encode('utf-8'))
+            client.close()           
+            continue     
                                         
         clients.append(client)       
         addresses.append(address)                

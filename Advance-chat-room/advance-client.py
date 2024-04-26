@@ -24,10 +24,10 @@ def receive():
                 if resp == 'pass':
                     client.send(passw.encode('utf-8'))
                     if client.recv(1024).decode('utf-8') == 'no':
-                        print('Connection refused.')
+                        print('Connection refused. Wrong password.')
                         os._exit(0)                                                                           
                 elif resp == 'ban':
-                    print('Connection refused. You\'re banned from the server.') 
+                    print('Connection refused. You\'re either banned from the server or this alias has been taken already or an empty string, Please try again.') 
                     os._exit(0)  
                                        
             else:

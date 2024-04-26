@@ -1,6 +1,7 @@
 import threading as th
 import socket as s
 import time
+import os
 
 
 # ip = input('IP address of the server: ')
@@ -15,8 +16,12 @@ def receive():
     while 1:
         try:
             message = client.recv(1024).decode('utf-8')            
-            if message == 'Your alias: ':
-                client.send(alias.encode('utf-8'))                           
+            if message == 'alias':
+                client.send(alias.encode('utf-8'))
+                resp = client.recv(1024).decode('utf-8')     
+                if resp == 'no':
+                    print('Connection refused. This alias has been taken already, Please try again.') 
+                    os._exit(0)                                            
             else:
                 print(message)    
                 
