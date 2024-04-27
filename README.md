@@ -6,23 +6,23 @@
 [![GitHub issues](https://img.shields.io/github/issues/KlausJackson/Chat-Room?logo=github)](https://github.com/KlausJackson/Chat-Room)
 <br>
 
-Python implementation of a simple chat room using TCP protocol. <br>
+Python implementation of a simple chat room using TCP protocol.
 For fun only. I'm a newbie, please don't throw rocks. <br>
 
 ## Credits
 
-Original idea and code: [NeuralNine](https://www.youtube.com/@NeuralNine) <br>
-Simple version: [Link](https://youtu.be/3UOyky9sEQY?si=ZfhIld_oTzGdTsgC) <br>
+Original idea and code: [NeuralNine](https://www.youtube.com/@NeuralNine) 
+Simple version: [Link](https://youtu.be/3UOyky9sEQY?si=ZfhIld_oTzGdTsgC) 
 Advance version: [Link](https://youtu.be/F_JDA96AdEI?si=naX_kLDcCWYCMohQ) <br>
 
-Special thanks to NeuralNine for his valuable content and tutorials. <br>
+Special thanks to NeuralNine for his valuable content and tutorials.
 
-My version is a little or maybe a lot different from NeuralNine. <br>
+My version is a little or maybe a lot different from NeuralNine.
 `/unban`, `/list`, `/banned`, `/quit` are ideas inspired by [Erkenbend's advance chat room version](https://github.com/Erkenbend/tcp-chat-room). <br>
 
 ## Requirements
 
-Python 3.8 or higher <br>
+Python 3.8 or higher 
 Libraries and Frameworks used in this repository: 
 - threading
 - socket
@@ -38,22 +38,22 @@ Preview of the simple version scripts on the same machine using 3 command prompt
 ## Usage
 
 There are 2 versions of the chat room: simple and advance. <br>
-* The simple version: has no authorities or commands at all. <br> 
-* The advance version: has ADMIN role, 7 available commands (description of each command below) and 2 small versions: <br>
-  * v1: to connect dfference machines because `/ban` also bans IP address. <br>
-  * v2: can be used to run on the same machines with multiple terminal windows, `/ban` only bans alias, just log in under another alias. <br>
+* The simple version: has no authorities or commands at all. 
+* The advance version: has ADMIN role, 7 available commands (description of each command below) and 2 small versions: 
+  * v1: to connect dfference machines because `/ban` also bans IP address. 
+  * v2: can be used to run on the same machines with multiple terminal windows, `/ban` only bans alias, just log in under another alias. 
 
-* How to run the code: open the terminal in the location where you installed the code and type `python3 <name of the file>.py`. <br>
+* How to run the code: open the terminal in the location where you installed the code and type `python3 <name of the file>.py`. 
 
 **NOTE**: 
-- You have to run the server.py first to be able to connect the clients together and chat. <br>
-- If you're running the scripts on the same machine, open separated terminal windows for each scripts. <br>
-- Remember to navigate to the directory containing the .py file first before you run the script. <br>
+- You have to run the server.py first to be able to connect the clients together and chat. 
+- If you're running the scripts on the same machine, open separated terminal windows for each scripts. 
+- Remember to navigate to the directory containing the .py file first before you run the script. 
 - ADMIN password resets to 123 when you run `server.py`.
   
 **Tip**:
-- Open the folder that contains the script you need to run. <br>
-- From the path box, type 'cmd' and command prompt with the path we need will open itself. Or you can copy the path and type command `cd <path>`. Both works. <br>
+- Open the folder that contains the script you need to run. 
+- From the path box, type 'cmd' and command prompt with the path we need will open itself. Or you can copy the path and type command `cd <path>`. Both works. 
 
 ## Features
 
@@ -76,7 +76,7 @@ One command that normal users can use but ADMIN can't:
 
 If you have any problem while running the code, feel free to file an issue. <br>
 
-I will never add a function/feature to make someone an admin, there can only be one boss in a server. <br>
+I will never add a function/feature to make someone an admin, there can only be one boss in a server. 
 I might upgrade this to a modern looking GUI application using Qt Designer in the future. <br>
 
 That's all I got. Enjoy!
