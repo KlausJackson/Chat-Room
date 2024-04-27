@@ -11,13 +11,13 @@ For fun only. I'm a newbie, please don't throw rocks. <br>
 
 ## Credits
 
-Original idea and code: [NeuralNine](https://www.youtube.com/@NeuralNine) 
-Simple version: [Link](https://youtu.be/3UOyky9sEQY?si=ZfhIld_oTzGdTsgC) 
+Original idea and code: [NeuralNine](https://www.youtube.com/@NeuralNine) <br> 
+Simple version: [Link](https://youtu.be/3UOyky9sEQY?si=ZfhIld_oTzGdTsgC) <br>
 Advance version: [Link](https://youtu.be/F_JDA96AdEI?si=naX_kLDcCWYCMohQ) <br>
 
 Special thanks to NeuralNine for his valuable content and tutorials.
 
-My version is a little or maybe a lot different from NeuralNine.
+My version is a little or maybe a lot different from NeuralNine. <br>
 `/unban`, `/list`, `/banned`, `/quit` are ideas inspired by [Erkenbend's advance chat room version](https://github.com/Erkenbend/tcp-chat-room). <br>
 
 ## Requirements
