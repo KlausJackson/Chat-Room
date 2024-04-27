@@ -6,7 +6,7 @@
 [![GitHub issues](https://img.shields.io/github/issues/KlausJackson/Chat-Room?logo=github)](https://github.com/KlausJackson/Chat-Room)
 <br>
 
-Python implementation of a simple chat room using TCP protocol.
+Python implementation of a simple chat room using TCP protocol. <br>
 For fun only. I'm a newbie, please don't throw rocks. <br>
 
 ## Credits
@@ -39,9 +39,18 @@ Preview of the simple version scripts on the same machine using 3 command prompt
 
 There are 2 versions of the chat room: simple and advance. <br>
 * The simple version: has no authorities or commands at all. 
-* The advance version: has ADMIN role, 7 available commands (description of each command below) and 2 small versions: 
+```python3 simple-server.py```
+```python3 simple-client.py```
+<br>
+
+* The advance version: has ADMIN role, 7 available commands (description of each command below) and 2 small versions of the server: 
   * v1: to connect dfference machines because `/ban` also bans IP address. 
+  ```python3 advance-server-v1.py```
+
   * v2: can be used to run on the same machines with multiple terminal windows, `/ban` only bans alias, just log in under another alias. 
+  ```python3 advance-server-v2.py```
+
+  For the client side: ```python3 advance-client.py```
 
 * How to run the code: open the terminal in the location where you installed the code and type `python3 <name of the file>.py`. 
 
