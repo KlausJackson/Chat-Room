@@ -23,11 +23,11 @@ My version is a little or maybe a lot different from NeuralNine. <br>
 ## Requirements
 
 Python 3.8 or higher <br>
-Libraries and Frameworks: 
+Libraries and Frameworks used in this repository: 
 - threading
 - socket
 - time <br>
-How to install: open terminal and type `pip install <library name>`. <br>
+They're all Python default library so no need to install anything except for Python 3.8 or higher.
 
 ## Preview
 
