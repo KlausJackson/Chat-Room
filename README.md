@@ -63,7 +63,7 @@ python3 simple-client.py
   python3 advance-client.py
   ```
 
-* How to run the code: open the terminal in the location where you installed the code and type `python3 <name of the file>.py`. 
+* How to run the code: open the terminal in the location where you installed the code and type `python3 <name of the file>.py`. <br>
 
 **NOTE**: 
 - You have to run the server.py first to be able to connect the clients together and chat. 
