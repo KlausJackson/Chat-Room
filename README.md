@@ -9,13 +9,9 @@
 ![](https://img.shields.io/github/issues-pr-closed/KlausJackson/Chat-Room.svg)
 ![](https://badge-size.herokuapp.com/KlausJackson/Chat-Room/main/Simple-chat-room)
 
-<br>
-
 ![](https://img.shields.io/github/forks/KlausJackson/Chat-Room.svg)
 ![](https://img.shields.io/github/stars/KlausJackson/Chat-Room.svg)
 ![](https://img.shields.io/github/watchers/KlausJackson/Chat-Room.svg)
-
-<br>
 
 Python implementation of a simple chat room using TCP protocol. <br>
 For fun only. I'm a newbie, please don't throw rocks. <br>
