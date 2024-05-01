@@ -4,6 +4,17 @@
 [![GitHub top language](https://img.shields.io/github/languages/top/KlausJackson/Chat-Room?logo=github)](https://github.com/KlausJackson/Chat-Room) 
 [![GitHub code size in bytes](https://img.shields.io/github/languages/code-size/KlausJackson/Chat-Room?logo=github)](https://github.com/KlausJackson/Chat-Room) 
 [![GitHub issues](https://img.shields.io/github/issues/KlausJackson/Chat-Room?logo=github)](https://github.com/KlausJackson/Chat-Room)
+![](https://img.shields.io/github/issues-closed/KlausJackson/Chat-Room.svg)
+![](https://img.shields.io/github/issues-pr/KlausJackson/Chat-Room.svg)
+![](https://img.shields.io/github/issues-pr-closed/KlausJackson/Chat-Room.svg)
+![](https://badge-size.herokuapp.com/KlausJackson/Chat-Room/main/Simple-chat-room)
+
+<br>
+
+![](https://img.shields.io/github/forks/KlausJackson/Chat-Room.svg)
+![](https://img.shields.io/github/stars/KlausJackson/Chat-Room.svg)
+![](https://img.shields.io/github/watchers/KlausJackson/Chat-Room.svg)
+
 <br>
 
 Python implementation of a simple chat room using TCP protocol. <br>
