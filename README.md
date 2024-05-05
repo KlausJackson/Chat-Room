@@ -26,7 +26,7 @@ My version is a little or maybe a lot different from NeuralNine. <br>
 `/unban`, `/list`, `/banned`, `/quit` are ideas inspired by [Erkenbend's advance chat room version](https://github.com/Erkenbend/tcp-chat-room). <br>
 
 ## How To Contact Me
-Here are my contact infos and my Patreon if you're interested in donating me... <br>
+Here are my contact infos and my Patreon if you're interested in donating me... <br> <br>
 [![Patreon](https://img.shields.io/badge/Patreon-AC7AC2?style=for-the-badge&logo=patreon&logoColor=white)](patreon.com/KlausJackson)
 [![LinkedIn](https://img.shields.io/badge/LinkedIn-0077B5?style=for-the-badge&logo=linkedin&logoColor=white)](https://www.linkedin.com/in/KlausJackson/) 
 [![Gmail](https://img.shields.io/badge/Gmail-D14836?style=for-the-badge&logo=gmail&logoColor=white)](mailto:KlausJackson2@gmail.com)
@@ -34,7 +34,6 @@ Here are my contact infos and my Patreon if you're interested in donating me... 
 [![Twitter](https://img.shields.io/badge/Twitter-0044BB?style=for-the-badge&logo=twitter&logoColor=white)](https://twitter.com/Klaus_Jackson2)
 
 ## Requirements
-
 Python 3.8 or higher 
 Libraries and Frameworks used in this repository: 
 - threading
@@ -43,13 +42,11 @@ Libraries and Frameworks used in this repository:
 They're all Python default library so no need to install anything except for Python 3.8 or higher.
 
 ## Preview
-
 Preview of the simple version scripts on the same machine using 3 command prompt windows. <br>
 
 ![Alt Text](example.png)
 
 ## Usage
-
 There are 2 versions of the chat room: simple and advance. <br>
 * The simple version: has no authorities or commands at all. 
 ```
@@ -89,7 +86,6 @@ python3 simple-client.py
 - From the path box, type 'cmd' and command prompt with the path we need will open itself. Or you can copy the path and type command `cd <path>`. Both works. 
 
 ## Features
-
 These commands are for ADMIN only:
 - `/kick` : to kick a user (only kick the user, you can still re-connect).
 - `/ban` : to ban a user (only ban the alias if it's a v1 server, ban alias along with IP address if it's a v2 server).
@@ -106,7 +102,6 @@ One command that normal users can use but ADMIN can't:
 **NOTE**: the server.py must be running all the time, otherwise every time you close it and run again, ADMIN password will be back to default: 123. But the banned list (ban.txt) is still the same, you can edit it manually or log in under ADMIN role and use the `/unban` command.
 
 ## The End
-
 If you have any problem while running the code, feel free to file an issue. <br>
 
 I will never add a function/feature to make someone an admin, there can only be one boss in a server. 
