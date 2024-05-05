@@ -16,7 +16,6 @@ Python implementation of a simple chat room using TCP protocol. <br>
 For fun only. I'm a newbie, please don't throw rocks. <br>
 
 ## Credits
-
 Original idea and code: [NeuralNine](https://www.youtube.com/@NeuralNine) <br> 
 Simple version: [Link](https://youtu.be/3UOyky9sEQY?si=ZfhIld_oTzGdTsgC) <br>
 Advance version: [Link](https://youtu.be/F_JDA96AdEI?si=naX_kLDcCWYCMohQ) <br>
@@ -25,6 +24,14 @@ Special thanks to NeuralNine for his valuable content and tutorials.
 
 My version is a little or maybe a lot different from NeuralNine. <br>
 `/unban`, `/list`, `/banned`, `/quit` are ideas inspired by [Erkenbend's advance chat room version](https://github.com/Erkenbend/tcp-chat-room). <br>
+
+## How To Contact Me
+Here are my contact infos and my Patreon if you're interested in donating me... <br>
+[![Patreon](https://img.shields.io/badge/Patreon-AC7AC2?style=for-the-badge&logo=patreon&logoColor=white)](patreon.com/KlausJackson)
+[![LinkedIn](https://img.shields.io/badge/LinkedIn-0077B5?style=for-the-badge&logo=linkedin&logoColor=white)](https://www.linkedin.com/in/KlausJackson/) 
+[![Gmail](https://img.shields.io/badge/Gmail-D14836?style=for-the-badge&logo=gmail&logoColor=white)](mailto:KlausJackson2@gmail.com)
+[![Steam](https://img.shields.io/badge/Steam-000050?style=for-the-badge&logo=steam&logoColor=white)](https://steamcommunity.com/id/KlausJackson/)
+[![Twitter](https://img.shields.io/badge/Twitter-0044BB?style=for-the-badge&logo=twitter&logoColor=white)](https://twitter.com/Klaus_Jackson2)
 
 ## Requirements
 
