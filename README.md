@@ -1,38 +1,38 @@
 # Python_Chat-Room
 
-[![Python](https://img.shields.io/badge/Python-3776AB?style=flat&logo=python&logoColor=white)](https://shields.io/) 
+[![Python](https://img.shields.io/badge/Python-3776AB?style=flat&logo=python&logoColor=white)](https://shields.io/)
 ![License](https://img.shields.io/badge/License-MIT-blue.svg)
-[![GitHub top language](https://img.shields.io/github/languages/top/KlausJackson/Chat-Room?logo=github)](https://github.com/KlausJackson/Chat-Room) 
-[![GitHub code size in bytes](https://img.shields.io/github/languages/code-size/KlausJackson/Chat-Room?logo=github)](https://github.com/KlausJackson/Chat-Room) 
+[![GitHub top language](https://img.shields.io/github/languages/top/KlausJackson/Chat-Room?logo=github)](https://github.com/KlausJackson/Chat-Room)
+[![GitHub code size in bytes](https://img.shields.io/github/languages/code-size/KlausJackson/Chat-Room?logo=github)](https://github.com/KlausJackson/Chat-Room)
 [![GitHub issues](https://img.shields.io/github/issues/KlausJackson/Chat-Room?logo=github)](https://github.com/KlausJackson/Chat-Room)
 [![GitHub issues](https://img.shields.io/github/issues-closed/KlausJackson/Chat-Room?logo=github)](https://github.com/KlausJackson/Chat-Room)
 [![GitHub issues](https://img.shields.io/github/issues-pr/KlausJackson/Chat-Room?logo=github)](https://github.com/KlausJackson/Chat-Room)
 [![GitHub issues](https://img.shields.io/github/issues-pr-closed/KlausJackson/Chat-Room?logo=github)](https://github.com/KlausJackson/Chat-Room)
 ![GitHub last commit](https://img.shields.io/github/last-commit/KlausJackson/Chat-Room?style=plastic)
 
-![](https://img.shields.io/github/forks/KlausJackson/Chat-Room.svg)
-![](https://img.shields.io/github/stars/KlausJackson/Chat-Room.svg)
-![](https://img.shields.io/github/watchers/KlausJackson/Chat-Room.svg)
+![Forks](https://img.shields.io/github/forks/KlausJackson/Chat-Room.svg)
+![Stars](https://img.shields.io/github/stars/KlausJackson/Chat-Room.svg)
+![Watchers](https://img.shields.io/github/watchers/KlausJackson/Chat-Room.svg)
 
-Python implementation of a simple chat room using TCP protocol. <br>
-For fun only. I'm a newbie, please don't throw rocks. <br>
+Python implementation of a simple chat room using TCP protocol.
+For fun only. I'm a newbie, please don't throw rocks.
 
 ## Credits
 
-Original idea and code: [NeuralNine](https://www.youtube.com/@NeuralNine) <br> 
-Simple version: [Link](https://youtu.be/3UOyky9sEQY?si=ZfhIld_oTzGdTsgC) <br>
-Advance version: [Link](https://youtu.be/F_JDA96AdEI?si=naX_kLDcCWYCMohQ) <br>
+Original idea and code: [NeuralNine](https://www.youtube.com/@NeuralNine)
+Simple version: [Link](https://youtu.be/3UOyky9sEQY?si=ZfhIld_oTzGdTsgC)
+Advance version: [Link](https://youtu.be/F_JDA96AdEI?si=naX_kLDcCWYCMohQ)
 
 Special thanks to NeuralNine for his valuable content and tutorials.
 
-My version is a little or maybe a lot different from NeuralNine. <br>
-`/unban`, `/list`, `/banned`, `/quit` are ideas inspired by [Erkenbend's advance chat room version](https://github.com/Erkenbend/tcp-chat-room). <br>
+My version is a little or maybe a lot different from NeuralNine.
+`/unban`, `/list`, `/banned`, `/quit` are ideas inspired by [Erkenbend's advance chat room version](https://github.com/Erkenbend/tcp-chat-room).
 
 ## How To Contact Me
 
 [![Patreon](https://img.shields.io/badge/Patreon-AC7AC2?style=for-the-badge&logo=patreon&logoColor=white)](patreon.com/KlausJackson)
 [![Buy Me A Coffee](https://img.shields.io/badge/BuyCoffee-FFFF00?style=for-the-badge&logo=buymeacoffee&logoColor=black)](https://buymeacoffee.com/KlausJackson)
-[![LinkedIn](https://img.shields.io/badge/LinkedIn-0077B5?style=for-the-badge&logo=linkedin&logoColor=white)](https://www.linkedin.com/in/KlausJackson/) 
+[![LinkedIn](https://img.shields.io/badge/LinkedIn-0077B5?style=for-the-badge&logo=linkedin&logoColor=white)](https://www.linkedin.com/in/KlausJackson/)
 [![Gmail](https://img.shields.io/badge/Gmail-D14836?style=for-the-badge&logo=gmail&logoColor=white)](mailto:KlausJackson2@gmail.com)
 [![Steam](https://img.shields.io/badge/Steam-000050?style=for-the-badge&logo=steam&logoColor=white)](https://steamcommunity.com/id/KlausJackson/)
 [![Twitter](https://img.shields.io/badge/Twitter-0044BB?style=for-the-badge&logo=twitter&logoColor=white)](https://twitter.com/Klaus_Jackson2)
@@ -60,27 +60,30 @@ There are 2 versions of the chat room: simple and advance.
 
 * The simple version: has no authorities or commands at all.
 
-```
+```python
 python3 simple-server.py
 ```
 
-```
+```python
 python3 simple-client.py
 ```
 
 * The advance version: has ADMIN role, 7 available commands (description of each command below) and 2 small versions of the server:
-  * v1: to connect dfference machines because `/ban` also bans IP address.
-  ```
+  - v1: to connect dfference machines because `/ban` also bans IP address.
+
+  ``` python
   python3 advance-server-v1.py
   ```
 
-  * v2: can be used to run on the same machines with multiple terminal windows, `/ban` only bans alias, just log in under another alias.
-  ```
+  - v2: can be used to run on the same machines with multiple terminal windows, `/ban` only bans alias, just log in under another alias.
+
+  ```python
   python3 advance-server-v2.py
   ```
 
   For the client side:
-  ```
+
+  ```python
   python3 advance-client.py
   ```
 
