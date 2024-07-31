@@ -20,10 +20,11 @@ def get_public_ip():
 
 
 help = """
+Advanced Chat Room v1
 These commands are for ADMIN only:
 
 /kick : to kick a user.
-/ban : to ban a user (only ban the alias if this is a v1 server, ban alias along with IP address if this is a v2 server).
+/ban : to ban a user (only ban the alias if this is a v2 server, ban alias along with IP address if this is a v1 server).
 /unban : to unban a user.
 /list : to show list of users who are in the server.
 /banned : to show list of users who are banned.
@@ -36,7 +37,6 @@ One command that normal users can use but ADMIN can't:
 Author: Klaus Jackson (https://github.com/KlausJackson)
 Idea and original code: https://youtu.be/F_JDA96AdEI?si=naX_kLDcCWYCMohQ
 For more infomation about this TCP Chat Room, visit https://github.com/KlausJackson/Chat-Room
-
 """
 
 
@@ -53,12 +53,19 @@ def get_ban():
                 if len(parts) == 2:
                     username, ip_address = parts
                     ban[username] = ip_address
+            f.close()
+            
     except Exception as e:
         print(f"An error occurred while reading ban-v1.txt: {e}")
     return ban
     
         
-password = '123'
+password = '123'  # you can create a pass.txt file or something to store the password, so it doesn't change when you
+# shutdown and restart the server.
+# with open('pass.txt', 'r') as f:
+#     password = f.read().strip()
+#     f.close()
+    
 public_ip = get_public_ip()
 
 
@@ -71,6 +78,9 @@ def stop_server():
 def change_pass(passwd, client):
     global password
     password = passwd
+    # with open('pass.txt', 'w') as f:
+    #     f.write(password)
+    #     f.close()
     now = time.strftime("%H:%M:%S")
     print(f'[{now}] ADMIN password changed successfully.')
     client.send('Password changed successfully.'.encode('utf-8'))
@@ -154,6 +164,7 @@ def connection(client, address, alias):
                     else:
                         client.send('Command was refused.'.encode('utf-8'))
                 
+                
                 elif msg.startswith('/banned'):
                     ban = get_ban()
                     if aliases[clients.index(client)].upper() == 'ADMIN':
@@ -163,9 +174,10 @@ def connection(client, address, alias):
                     else:
                         client.send('Command was refused.'.encode('utf-8'))                   
                     
+                    
                 elif msg.startswith('/ban'):
                     if aliases[clients.index(client)].upper() == 'ADMIN':
-                        user = msg[5:]
+                        user = msg[5:] # get the alias
                         if user in aliases:
                             kick(user, address, client)
                             ban[user] = address   
@@ -180,6 +192,7 @@ def connection(client, address, alias):
                     else:
                         client.send('Command was refused.'.encode('utf-8'))    
                          
+                         
                 elif msg.startswith('/unban'):
                     if aliases[clients.index(client)].upper() == 'ADMIN':
                         user = msg[7:]
@@ -187,11 +200,20 @@ def connection(client, address, alias):
                     else:
                         client.send('Command was refused.'.encode('utf-8')) 
                 
+                
                 elif msg.startswith('/pass'):
                     if aliases[clients.index(client)].upper() == 'ADMIN':
                         change_pass(msg[6:], client)        
                     else:
                         client.send('Command was refused.'.encode('utf-8')) 
+                        
+                        
+                elif msg.startswith('/showpass'):
+                    if aliases[clients.index(client)].upper() == 'ADMIN':
+                        client.send(f'Your password is: {password}'.encode('utf-8'))        
+                    else:
+                        client.send('Command was refused.'.encode('utf-8'))        
+                
                 
                 elif msg.startswith('/q') or msg.startswith('/quit'):
                     if aliases[clients.index(client)].upper() == 'ADMIN':
@@ -199,15 +221,19 @@ def connection(client, address, alias):
                     else:
                         client.send('Command was refused.'.encode('utf-8')) 
                 
+                
                 elif msg.startswith('/list'):
                     if aliases[clients.index(client)].upper() == 'ADMIN':
+                        # Also print in the server screen to avoid interuption from messages of other clients.
                         client.send(f'Total: {len(clients)}'.encode('utf-8'))
+                        print('Total:', len(clients))
                         for k, (ad, al) in enumerate(zip(addresses, aliases), start=1):
-                            #Also printing in the server screen to avoid interuption from messages of other clients.                           
+                                                       
                             client.send(f'{k}. <{ad}> {al}\n'.encode('utf-8'))
-                            
+                            print(f'{k}. <{ad}> {al}')
                     else:
                         client.send('Command was refused.'.encode('utf-8'))     
+                        
                         
                 elif msg.startswith('/help'):
                     if aliases[clients.index(client)].upper() == 'ADMIN':        

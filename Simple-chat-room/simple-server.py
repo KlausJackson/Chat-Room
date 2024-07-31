@@ -1,10 +1,15 @@
-import threading as th
-import socket as s
-import time
-import subprocess
-import re
+import threading as th, socket as s, time, subprocess, re
+
+# get_public_ip function note:
+# Advance version: not recommended if you plan to run server.py and client.py on the same machine because the ban 
+# function bans the IP address, cause the server to be unable to connect to itself -> crash.
+
+# Simple version: works fine because no ban function. If you want ban command then use advance version (v2)
+# because it only bans alias.
+
 
 def get_public_ip():
+    '''Get the public IP address of the server.'''
     try:
         # Run ipconfig command to get network interface information
         result = subprocess.run(['ipconfig'], capture_output=True, text=True)
@@ -24,9 +29,10 @@ def get_public_ip():
         print(f"An error occurred: {e}")
         return None
     
-clients = []
+    
+clients = [] 
 aliases = []
-addresses = []
+addresses = [] 
 public_ip = get_public_ip()    
 
 
@@ -66,7 +72,8 @@ def connection(client, address, alias):
 def start():
     '''AF_INET : the address domain of the socket. 
     Indicate that socket can be used for communication between any hosts connected to the Internet.
-    SOCK_STREAM : the type of socket. Means that data or characters are read in a continuous flow.'''    
+    SOCK_STREAM : the type of socket. Means that data or characters are read in a continuous flow.'''  
+      
     server = s.socket(s.AF_INET, s.SOCK_STREAM)
     server.setsockopt(s.SOL_SOCKET, s.SO_REUSEADDR, 1)
     server.bind((public_ip, 8000))
@@ -74,13 +81,14 @@ def start():
     print("Server is running...")
     print(f'Your server IP address is: {public_ip}')
     
+    # watch the tutorial for better understanding.
     while 1:       
         client, address = server.accept()
-        client.send("alias".encode('utf-8'))
-        alias = client.recv(1024).decode('utf-8')
+        client.send("alias".encode('utf-8')) # send 'alias' to the client as a signal for client to send their alias.
+        alias = client.recv(1024).decode('utf-8') # get the alias of the client.
                    
         if alias in aliases:
-            client.send("no".encode('utf-8'))
+            client.send("no".encode('utf-8')) # if the alias is already taken, send 'no' to the client.
             client.close()           
             continue     
                                         

@@ -1,6 +1,5 @@
-import threading as th
-import socket as s
-import os
+import threading as th, socket as s, os
+
 
 ip = input('IP address of the server: ')
 # ip = '127.0.0.1'    #localhost
@@ -16,11 +15,13 @@ def receive():
     '''Receive messages from the server.'''
     while 1:
         try:
-            message = client.recv(1024).decode('utf-8')            
+            message = client.recv(1024).decode('utf-8')     
+            # if the message is 'alias', the client sends their alias to the server.    
             if message == 'alias':
                 client.send(alias.encode('utf-8'))                           
                 resp = client.recv(1024).decode('utf-8')
-                    
+                
+                # after sending the alias, the client sends their password to the server.    
                 if resp == 'pass':
                     client.send(passw.encode('utf-8'))
                     if client.recv(1024).decode('utf-8') == 'no':
@@ -48,6 +49,7 @@ def typing():
         message = f'[{alias}] {input()}'            
             
         if message[len(alias) + 3:].startswith('/'):    
+            # change alias (only for non-ADMIN)
             if message[len(alias) + 3:].startswith('/alias'):
                 if alias.upper() == 'ADMIN':
                     print('You can\'t change your alias because you\'re ADMIN.')
@@ -56,16 +58,23 @@ def typing():
                 else:    
                     client.send(message[len(alias) + 3:].encode('utf-8'))
                     alias = message[len(alias) + 3 + 7:]  
-                                  
+            
+            # check if the alias is ADMIN, the commands still won't work if you modify this file
+            # because the server is what checks the commands, not the client.                 
             elif alias.upper() == 'ADMIN':
-                if message[len(alias) + 3:].startswith('/pass'):
+                
+                # commands that don't need any parameters
+                if message[len(alias) + 3:].startswith('/pass'): # change password
                     client.send(message[len(alias) + 3:].encode('utf-8'))    
-                else:
+                elif message[len(alias) + 3:].startswith('/showpass'): # show password
+                    client.send(message[len(alias) + 3:].encode('utf-8')) 
+                elif message[len(alias) + 3:].startswith('/q'): # quit
+                    print('Shutting down the server.')
+                    os._exit(0)                     
+                
+                # commands that need parameters, ex: /kick <alias>      
+                else:    
                     client.send(f'{message[len(alias) + 3:]}'.encode('utf-8'))                        
-                    if message[len(alias) + 3:].startswith('/q'):
-                        print('Shutting down the server.')
-                        os._exit(0)                    
-
             else:
                 print('Commands are for ADMIN only.')
         else:

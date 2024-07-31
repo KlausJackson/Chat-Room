@@ -1,7 +1,4 @@
-import threading as th
-import socket as s
-import time
-import os
+import threading as th, socket as s, time, os
 
 
 # ip = input('IP address of the server: ')
@@ -15,8 +12,9 @@ def receive():
     '''Receive messages from the server.'''
     while 1:
         try:
-            message = client.recv(1024).decode('utf-8')            
-            if message == 'alias':
+            message = client.recv(1024).decode('utf-8')      
+            # if the message is 'alias', the client sends their alias to the server.      
+            if message == 'alias': 
                 client.send(alias.encode('utf-8'))
                 resp = client.recv(1024).decode('utf-8')     
                 if resp == 'no':
@@ -40,7 +38,6 @@ def typing():
         
         
 receive = th.Thread(target = receive).start() 
-time.sleep(1)    
 typing = th.Thread(target = typing).start()   
 
                 

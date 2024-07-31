@@ -60,11 +60,11 @@ There are 2 versions of the chat room: simple and advance.
 
 **The simple version:** has no authorities or commands at all.
 
-```python
+```terminal
 python3 simple-server.py
 ```
 
-```python
+```terminal
 python3 simple-client.py
 ```
 
@@ -72,19 +72,19 @@ python3 simple-client.py
 
 - v1: to connect dfference machines because `/ban` also bans IP address.
 
-  ``` python
+  ``` terminal
   python3 advance-server-v1.py
   ```
 
 - v2: can be used to run on the same machines with multiple terminal windows, `/ban` only bans alias, just log in under another alias.
 
-  ```python
+  ```terminal
   python3 advance-server-v2.py
   ```
 
 For the client side:
 
-  ```python
+  ```terminal
   python3 advance-client.py
   ```
 
@@ -92,11 +92,23 @@ For the client side:
 
 **NOTE**:
 
-- You have to run the server.py first to be able to connect the clients together and chat.
+- You have to run the `server.py` first to be able to connect the clients together and chat.
 - If you're running the scripts on the same machine, open separated terminal windows for each scripts.
 - Remember to navigate to the directory containing the .py file first before you run the script.
-- ADMIN password resets to 123 when you run `server.py`.
-  
+- Ban list is in `ban-v[version name].txt`, edit it manually or use commands to change.
+- ADMIN password resets to 123 when you run `server.py` or you can use `pass.txt` file to store the password, so it doesn't change when you shutdown and restart the server. `pass.txt` should only be kept on the machine that keeps the server running. Locate the follwoing code (in `server.py`) then uncomment them for this to work:
+
+  ```python
+  with open('pass.txt', 'r') as f:
+      password = f.read().strip()
+      f.close()
+
+    # inside `change_pass` function.    
+  with open('pass.txt', 'w') as f:
+      f.write(password)
+      f.close()
+  ```  
+
 **Tip**:
 
 - Open the folder that contains the script you need to run.
@@ -107,8 +119,8 @@ For the client side:
 These commands are for ADMIN only:
 
 - `/kick` : to kick a user (only kick the user, you can still re-connect).
-- `/ban` : to ban a user (only ban the alias if it's a v1 server, ban alias along with IP address if it's a v2 server).
-- `/unban` : to unban a user.
+- `/ban` : to ban a user (only ban the alias if it's a v2 server, ban alias along with IP address if it's a v1 server).
+- `/unban` : to unban a user. Still works even if that user is not online.
 - `/list` : to show list of users who are in the server.
 - `/banned` : to show list of users who are banned.
 - `/pass` : to change your ADMIN password.
@@ -119,13 +131,13 @@ One command that normal users can use but ADMIN can't:
 
 - `/alias` : to change your alias.
 
-**NOTE**: the server.py must be running all the time, otherwise every time you close it and run again, ADMIN password will be back to default: 123. But the banned list (ban.txt) is still the same, you can edit it manually or log in under ADMIN role and use the `/unban` command.
+**NOTE**: keep the server running, or ADMIN password will be back to default: 123 or you can modify the code like in #Usage. Banned list (`ban-v[version name].txt`) is still the same, edit it manually or use commands to change.
 
 ## The End
 
-If you have any problem while running the code, feel free to file an issue.
+If you have any problem while running the code or any ideas to improve it, feel free to file an issue.
 
 I will never add a function/feature to make someone an admin, there can only be one boss in a server.
-I might upgrade this to a modern looking GUI application using Qt Designer in the future.
+I might upgrade this to a modern looking GUI application using Qt Designer in the future. There will be updates in the future.
 
 That's all I got. Enjoy!
