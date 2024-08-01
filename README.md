@@ -112,7 +112,7 @@ For the client side:
 **Tip**:
 
 - Open the folder that contains the script you need to run.
-- From the path box, type 'cmd' and command prompt with the path we need will open itself. Or you can copy the path and type command `cd <path>`. Both works.
+- From the path box, type 'cmd' or right-mouse, select `Open in Terminal`. Both works.
 
 ## Features
 
