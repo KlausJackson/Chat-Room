@@ -39,7 +39,7 @@ My version is a little or maybe a lot different from NeuralNine.
 
 ## Requirements
 
-Python 3.8 or higher
+Python 3.8 or higher <br>
 Libraries and Frameworks used in this repository:
 
 - threading
