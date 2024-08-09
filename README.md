@@ -56,6 +56,8 @@ Preview of the simple version scripts on the same machine using 3 command prompt
 
 ## Usage
 
+Non-programmers can read [this short tutorial on how to setup Python environment if you haven't](README.md#how-to-setup-python-environment-for-non-programmers), ask AI or file an issue to get better instruction on how to run this app. <br>
+
 There are 2 versions of the chat room: simple and advance.
 
 **The simple version:** has no authorities or commands at all.
@@ -141,3 +143,15 @@ I will never add a function/feature to make someone an admin, there can only be 
 I might upgrade this to a modern looking GUI application using Qt Designer in the future. There will be updates in the future.
 
 That's all I got. Enjoy!
+
+## How to Setup Python Environment (for non-programmers)
+
+**This tutorial is for Windows users, check out YouTube, ask AI if you use other operating system (Linux/MacOS)**
+
+- Download [Python on their website](https://www.python.org/downloads/) or Microsoft Store.
+- Search for "Environment Variables" on your computer, click on the following: "Edit the system environment variables" > "Environment Variables" > "Path" (below "OS") > "Edit".
+- Locate `python.exe`, `Scripts` and `site-packages` folders, add their paths to the system path (click on "New" in ""Edit environment variables" window). Click "OK" to save everything.
+- SOMETIMES, the order of the path matters, so you need to move them up to the top.
+- Open command prompt, use `python --version` and `pip --version` to verify that you have successfully setup your Python environment.
+
+Check out YouTube tutorials, ask AI or file an issue if you still have questions.
