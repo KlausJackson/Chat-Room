@@ -22,6 +22,9 @@ For fun only. I'm a newbie, please don't throw rocks.
 Original idea and code: [NeuralNine](https://www.youtube.com/@NeuralNine)
 Simple version: [Link](https://youtu.be/3UOyky9sEQY?si=ZfhIld_oTzGdTsgC)
 Advance version: [Link](https://youtu.be/F_JDA96AdEI?si=naX_kLDcCWYCMohQ)
+C++ version: [Link](https://github.com/cjchirag7/chatroom-cpp) (only works on Linux/MacOs, doesn't have any features - at the time that I'm writing this line)
+
+I'm trying to develop my own C++ version that runs on Windows. The development processs is gonna take a long time because I have other things to do. <br>
 
 Special thanks to NeuralNine for his valuable content and tutorials.
 

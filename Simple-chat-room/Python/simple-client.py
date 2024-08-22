@@ -1,4 +1,4 @@
-import threading as th, socket as s, time, os
+import threading as th, socket as s, os
 
 
 # ip = input('IP address of the server: ')
