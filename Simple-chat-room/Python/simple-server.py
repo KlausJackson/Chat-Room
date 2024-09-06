@@ -2,11 +2,13 @@ import threading as th, socket as s, time, subprocess, re
 
 # get_public_ip function note:
 # Advance version: not recommended if you plan to run server.py and client.py on the same machine because the ban 
-# function bans the IP address, cause the server to be unable to connect to itself -> crash.
+# function bans the IP address, causes the server to be unable to connect to itself -> crash.
 
 # Simple version: works fine because no ban function. If you want ban command then use advance version (v2)
 # because it only bans alias.
 
+port = 8000 # you can change the port number if you want to.
+limit = 30 # the server can only accept 30 connections. You can change this number if you want to.
 
 def get_public_ip():
     '''Get the public IP address of the server.'''
@@ -24,16 +26,18 @@ def get_public_ip():
             return ipv4_address
         else:
             print("IPv4 address not found.")
-            return None
+            return False
     except Exception as e:
         print(f"An error occurred: {e}")
-        return None
+        return False
     
     
 clients = [] 
 aliases = []
 addresses = [] 
-public_ip = get_public_ip()    
+public_ip = get_public_ip()
+if not public_ip:
+    public_ip = 'localhost'    
 
 
 def broadcast(message):
@@ -76,12 +80,18 @@ def start():
       
     server = s.socket(s.AF_INET, s.SOCK_STREAM)
     server.setsockopt(s.SOL_SOCKET, s.SO_REUSEADDR, 1)
-    server.bind((public_ip, 8000))
-    server.listen(5)
+    try:
+        server.bind((public_ip, port))
+    except Exception as e:
+        print(f'An error occurred: {e}.')
+        print("You should try to change the public_ip to 'localhost'.")
+        
+    server.listen(30) # the server can only accept 30 connections.
     print("Server is running...")
+    print(f"Server is using port {port}.")
     print(f'Your server IP address is: {public_ip}')
     
-    # watch the tutorial for better understanding.
+    
     while 1:       
         client, address = server.accept()
         client.send("alias".encode('utf-8')) # send 'alias' to the client as a signal for client to send their alias.

@@ -1,6 +1,7 @@
 import threading as th, socket as s, time, subprocess, re, os
 
-
+port = 8000 # you can change the port number if you want to.
+limit = 30 # the server can only accept 30 connections. You can change this number if you want to.
 def get_public_ip():
     try:
         result = subprocess.run(['ipconfig'], capture_output=True, text=True)
@@ -110,6 +111,7 @@ def unban(user, address, client):
         broadcast(f'{user} has been unbanned.')
     else:
         client.send(f'User {user} is not in the banned users list.'.encode('utf-8'))
+    del ban # free up memory
         
 
 def kick(user, address, client):
@@ -179,8 +181,8 @@ def connection(client, address, alias):
                     if aliases[clients.index(client)].upper() == 'ADMIN':
                         user = msg[5:] # get the alias
                         if user in aliases:
-                            kick(user, address, client)
-                            ban[user] = address   
+                            kick(user, address, client) # kick the user first
+                            ban[user] = address # fetch the IP address of the user
                                                      
                             with open("ban-v1.txt",'a') as f:
                                 f.write(f'{user} {address}\n')                            
@@ -222,14 +224,14 @@ def connection(client, address, alias):
                         client.send('Command was refused.'.encode('utf-8')) 
                 
                 
+                # print : print in the server side
+                # client.send : print in the ADMIN client side               
                 elif msg.startswith('/list'):
                     if aliases[clients.index(client)].upper() == 'ADMIN':
-                        # Also print in the server screen to avoid interuption from messages of other clients.
-                        client.send(f'Total: {len(clients)}'.encode('utf-8'))
+                        # client.send(f'Total: {len(clients)}'.encode('utf-8'))
                         print('Total:', len(clients))
-                        for k, (ad, al) in enumerate(zip(addresses, aliases), start=1):
-                                                       
-                            client.send(f'{k}. <{ad}> {al}\n'.encode('utf-8'))
+                        for k, (ad, al) in enumerate(zip(addresses, aliases), start=1):              
+                            # client.send(f'{k}. <{ad}> {al}\n'.encode('utf-8'))
                             print(f'{k}. <{ad}> {al}')
                     else:
                         client.send('Command was refused.'.encode('utf-8'))     
@@ -243,11 +245,15 @@ def connection(client, address, alias):
                                                                                                        
                 else:
                     if aliases[clients.index(client)].upper() == 'ADMIN':
+                        # in case the ADMIN types a wrong command.
+                        client.send('Command not found. Type /help for more information.'.encode('utf-8'))
                         client.send('Available commands for ADMIN: /list, /ban, /banned, /unban, /kick, /q or /quit, /help'.encode('utf-8'))                                                                                                                            
             else:                                        
                 broadcast(message)
                                
         except:
+            # if a client is not connected anymore, remove that client and broadcast everyone 
+            # that someone just left.
             if client in clients:
                 i = clients.index(client)
                 clients.remove(client)
@@ -269,12 +275,14 @@ def start():
     server = s.socket(s.AF_INET, s.SOCK_STREAM)
     server.setsockopt(s.SOL_SOCKET, s.SO_REUSEADDR, 1)
     try:
-        server.bind((public_ip, 8000))
+        server.bind((public_ip, port))
     except Exception as e:
         print(f'An error occurred: {e}.')
-        print("You should try to change the public_ip to 'localhost' at line 40.")
-    server.listen(30)
+        print("You should try to change the public_ip to 'localhost'.")
+        
+    server.listen(limit)
     print("Server is running...")
+    print(f"Server is using port {port}.")
     print(f'Your server IP address is: {public_ip}')
 
     while 1:   
@@ -286,21 +294,22 @@ def start():
         if (alias in ban and address in ban.values()) or alias in aliases or alias == '':
             client.send('ban'.encode('utf-8'))
             client.close()
-            continue            
-        if alias.upper() == 'ADMIN':
+            continue          
+          
+        if alias.upper() == 'ADMIN': # if the alias is ADMIN, ask for the password.
             client.send('pass'.encode('utf-8'))
-            passw = client.recv(1024).decode('utf-8')
-            if passw != password:
+            passw = client.recv(1024).decode('utf-8') # get the password from the client.
+            if passw != password: # if the password is wrong, close the connection.
                 client.send('no'.encode('utf-8'))
                 print('Someone tried to log in ADMIN.')
                 client.close()
-                continue   
+                continue    
                                             
         clients.append(client)       
         addresses.append(address)                
         aliases.append(alias)               
         client.send("Welcome to this chat room!\nYou're now connected to the server!".encode('utf-8'))
-        client.send("-------------------------------\n".encode('utf-8'))
+        client.send("---------------------------------------------------------------\n".encode('utf-8'))
         broadcast(f"{alias} has joined the chat.".encode('utf-8'))           
         client_thread = th.Thread(target=connection, args=(client, address, alias))
         client_thread.start()

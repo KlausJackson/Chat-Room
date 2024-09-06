@@ -97,6 +97,7 @@ For the client side:
 
 **NOTE**:
 
+- If you intent to use this chat room to handle many users, I recommend using a database to store users' information and the banned users for better performance.
 - You have to run the `server.py` first to be able to connect the clients together and chat.
 - If you're running the scripts on the same machine, open separated terminal windows for each scripts.
 - Remember to navigate to the directory containing the .py file first before you run the script.
@@ -114,6 +115,26 @@ For the client side:
       f.close()
   ```  
 
+- When using `/list`, you can edit whether you want to view list of users in the server to be printed out in the server terminal or the ADMIN client terminal by editing the following code:
+
+```python
+  # printing in the server side to avoid interuption from messages of other clients.
+  # print : print in the server side
+  # client.send : print in the ADMIN client side
+  elif msg.startswith('/list'):
+    if aliases[clients.index(client)].upper() == 'ADMIN':
+      # client.send(f'Total: {len(clients)}'.encode('utf-8'))
+      print('Total:', len(clients))
+      for k, (ad, al) in enumerate(zip(addresses, aliases), start=1):              
+      # client.send(f'{k}. <{ad}> {al}\n'.encode('utf-8'))
+        print(f'{k}. <{ad}> {al}')
+    else:
+      client.send('Command was refused.'.encode('utf-8'))  
+```
+
+- You can edit `limit` to change the number of connections that you allow in your server. The orginal value is 30.
+- You can edit the `port` if your 8000 port is already in used.
+
 **Tip**:
 
 - Open the folder that contains the script you need to run.
@@ -126,7 +147,7 @@ These commands are for ADMIN only:
 - `/kick` : to kick a user (only kick the user, you can still re-connect).
 - `/ban` : to ban a user (only ban the alias if it's a v2 server, ban alias along with IP address if it's a v1 server).
 - `/unban` : to unban a user. Still works even if that user is not online.
-- `/list` : to show list of users who are in the server.
+- `/list` : to show list of users in the server.
 - `/banned` : to show list of users who are banned.
 - `/pass` : to change your ADMIN password.
 - `/quit` or `/q` : to shut down the server.
