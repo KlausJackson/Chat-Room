@@ -1,16 +1,6 @@
 import threading as th, socket as s, os, time
 
 
-ip = input('IP address of the server: ')
-# ip = '127.0.0.1'    #localhost
-client = s.socket(s.AF_INET, s.SOCK_STREAM)
-alias = input("What do you wish to be called? - ") 
-if alias.upper() == 'ADMIN':
-    passw = input('enter pass: ')
-      
-client.connect((ip, 8000))
-
-
 def receive():
     '''Receive messages from the server.'''
     while 1:
@@ -39,63 +29,68 @@ def receive():
                                        
             else:
                 print(msg)
-                if msg == 'You were kicked by ADMIN.':
-                    os._exit(0)                             
+                if msg == 'You were kicked by ADMIN.': os._exit(0)                             
                     
         except Exception as e:
-            print("-------------------------------")
-            print(f"Something's wrong: {e}. Closing...")   
+            print("---------------------------------------------------------------")
+            print(f"Something's wrong: {e}.\nClosing...")   
             os._exit(0)                     
+               
                 
                 
 def typing():
     '''Send messages to the server.'''
     global alias
     while 1:
-        msg = input()     
-               
-        if msg.startswith('/alias'):
-            if alias.upper() == 'ADMIN': # check if the alias is ADMIN
-                print('ADMIN can\'t change their alias.')
-            elif msg[7:].upper() == 'ADMIN': # check if the new alias is ADMIN
-                # 7 is the length of '/alias '.
-                print('You can\'t pretend to be ADMIN.')
-            else:    
-                client.send(msg.encode('utf-8'))
-                if client.recv(1024).decode('utf-8') == 'yes': # recieve confirmation from the server
-                    alias = msg[7:] # update the new alias
-                # check if client receive the response from the server or not about alias already been taken or an empty string.
-            
-        elif msg.startswith('/shutdown'):
-            if alias.upper() == 'ADMIN':
+        try:
+            msg = input().strip()     
+                
+            if msg.startswith('/alias '): # 7 is the length of '/alias '.
+                if msg[7:] != '' and msg[7:] != 'ADMIN' and msg[7:] != alias:
+                    if alias.upper() == 'ADMIN': print('ADMIN can\'t change their alias.\n')
+                # if you delete the above condition, the client side will probably freeze for a while.
+                    else:    
+                        client.send(msg.encode('utf-8'))
+                        if client.recv(1024).decode('utf-8') == 'Alias changed successfully!': 
+                            alias = msg[7:] # update the new alias
+                else: print('Invalid alias. Please try again. Type /help to read *alias rules*.\n')
+
+
+            elif msg.startswith('/shutdown') and alias.upper() == 'ADMIN':
                 client.send(msg.encode('utf-8'))
                 print('Shutting down the server.')
                 os._exit(0)  
-        
-        elif msg.startswith('/pass'):
-            if alias.upper() == 'ADMIN':
+            
+            
+            elif msg.startswith('/pass') and alias.upper() == 'ADMIN' and msg[6:] != '':
                 client.send(msg.encode('utf-8'))
-                # check for error if the user receive the response from the server or not.
-                if client.recv(1024).decode('utf-8') == 'no':
-                    print('1. Password can\'t be the same as your old password.')
-                    print('2. Password can\'t be an empty string.')
-                elif client.recv(1024).decode('utf-8') == 'yes':
+                if not client.recv(1024).decode('utf-8').startswith('Invalid password.'):
                     confirmation = input("Type 'y' to confirm the new password, other to cancel:")
                     client.send(confirmation.encode('utf-8'))
 
-        elif msg.startswith('save_log'):
-            all_lines = client.recv(1024).decode('utf-8')
-            now = time.localtime() # save time of the log.
-            with open('serverlog_'+str(now.strftime("%Y-%m-%d_%H-%M-%S"))+'.txt', 'a') as f:
-                f.write(all_lines)   
-                f.close()
+            elif msg.startswith('save_log') and alias.upper() == 'ADMIN':
+                timestamp, log = client.recv(1024).decode('utf-8').split('+')
+                with open(timestamp, 'a') as f:
+                    f.write(log)   
+                    f.close()
 
-        else:
-            client.send(msg.encode('utf-8'))    
-                
-        
-receive = th.Thread(target = receive).start()     
-typing = th.Thread(target = typing).start()   
+            else: client.send(msg.encode('utf-8'))    
+        except Exception as e:
+            print(f"Error: {e}.\nTry restarting the client if it crashes.\n") 
+            break     
+                    
+                      
+
+if __name__ == '__main__':
+    # ip = input('IP address of the server: ')
+    ip = '192.168.1.4'    #localhost
+    client = s.socket(s.AF_INET, s.SOCK_STREAM)
+    alias = input("What do you wish to be called? - ") 
+    if alias.upper() == 'ADMIN': passw = input('Enter pass: ')
+            
+    client.connect((ip, 8000))
+    receive = th.Thread(target = receive).start()     
+    typing = th.Thread(target = typing).start()   
                 
                 
                 

@@ -5,16 +5,6 @@ port = 8000 # you can change the port number.
 limit = 30 # the server can only accept 30 connections. You can change this number.
 
 
-while a != 'y' and a != 'n': # save the chat log to a file.
-    a = input('Do you want to save the chat log? (y/n): ')
-    if a == 'y':
-        save_chat = True
-    elif a == 'n':
-        save_chat = False
-    else:
-        print('Invalid input. Please enter y or n.')
-
-
 def get_public_ip():
     '''Get the public IP address of the server.
        If the public IP address is not found, use 'localhost' as default.'''
@@ -45,24 +35,31 @@ Commands for all users:
 
 These commands are for ADMIN only:
 
-/kick : to kick a user.
-/ban : to ban a user (only ban the alias - v2 server, ban IP address - v1 server).
-/unban : to unban a user.
+/kick abc: to kick a user.
+/ban abc: to ban a user (only ban the alias - v2 server, ban IP address - v1 server).
+/unban abc: to unban a user.
 /list : to show list of users who are in the server.
 /banned : to show list of users who are banned.
 /show_log : to show the log of the server.
 /save_log : to save the log of the server.
-/pass : to change your ADMIN password. Wait for input field to enter your new password.
+/pass abc: to change your ADMIN password. Wait for input field to enter your new password.
 /shutdown : to shut down the server.
 
-*password rules*
+*Password rules*
 1. Password can't be the same as your old password.
 2. Password can't be an empty string.
 3. Password is stripped of leading and trailing whitespaces.
 
 One command that normal users can use but ADMIN can't: 
 /alias : to change your alias.
-/whisper : to send a private message to ADMIN (ADMIN can still read later when they're not online). You can use this to report someone or ask for help. ADMIN will use server log and ban the user if you provide proof of the user's wrongdoings.
+/whisper abc: to send a private message to ADMIN (ADMIN can still read later when they're not online). You can use this to report someone or ask for help. ADMIN will use chat log and ban the user if necessary.
+
+*Alias rules*
+1. Alias can't be 'ADMIN'.
+2. Alias can't be an empty string.
+3. Alias can't be the same as other users' alias.
+4. Alias is stripped of leading and trailing whitespaces.
+5. Alias can't be the same as your old alias.
 
 Author: Klaus Jackson (https://github.com/KlausJackson)
 For more infomation about this TCP Chat Room, visit https://github.com/KlausJackson/Chat-Room
@@ -75,7 +72,7 @@ addresses = [] # store the IP address of the clients.
 
 
 def savelog(text):
-    with open(f'serverlog_{timestamp}', 'a') as f:
+    with open(f'serverlog_{timestamp}', 'a', encoding='utf-8') as f:
         f.write(text + '\n')
         f.close()
 
@@ -83,7 +80,7 @@ def savelog(text):
 def get_ban():
     ban = []
     try:
-        with open("ban-v2.txt", 'r') as f:
+        with open("ban-v2.txt", 'r', encoding='utf-8') as f:
             usernames = f.readlines()
             ban.extend(usernames)
             f.close()
@@ -124,26 +121,26 @@ def change_pass(passwd, client, now):
     text = f'[{now}] ADMIN password changed successfully.'
     print(text)
     savelog(text)
-    client.send('Password changed successfully.'.encode('utf-8'))
+    client.send('Password changed successfully.\n'.encode('utf-8'))
     
 
 def change_alias(alias, client, address, now):
-    if alias in aliases:
-        client.send('This alias has been taken.'.encode('utf-8'))
-        return
     old_alias = aliases[clients.index(client)]
     broadcast(f'{old_alias} has changed to {alias}.', now)
     text = f'[{now}] <{address}> - {old_alias} has changed to {alias}.'
     print(text)
     savelog(text)
+    print('saving')
     aliases[clients.index(client)] = alias
+    print(aliases[clients.index(client)])
+    client.send('Alias changed successfully!\n'.encode('utf-8'))
 
 
 def unban(user, user_ip, client, now):
     ban = get_ban() # get the banned users list from the file.
     if user in ban: # check if the user is in the banned users list.
         del ban[user] # remove the user from the banned users list.
-        with open("ban-v2.txt", 'w') as f:
+        with open("ban-v2.txt", 'w', encoding='utf-8') as f:
             for banned_user in ban.items():
                 f.write(f'{banned_user}\n')
             f.close()
@@ -174,10 +171,9 @@ def kick(user, user_ip, now):
 def broadcast(message, now):
     '''Display the message.'''  
     if isinstance(message, bytes):
-        message = message.decode('utf-8')            
-    message = f'[{now}] {message}'
+        message = message.decode('utf-8')
     for client in clients:   
-        client.send(message.encode('utf-8'))
+        client.send(f'[{now}] {message}'.encode('utf-8'))
 
 
 def connection(client, address, alias):
@@ -185,10 +181,10 @@ def connection(client, address, alias):
     If a client is not connected anymore, it raises an exception, 
     removes that client and broadcasts everyone that someone just left.'''  
     
-    now = time.strftime("%H:%M:%S")        
+    now = time.strftime("%Y-%m-%d %H:%M:%S", time.localtime())        
     while 1:
         try:
-            msg = client.recv(1024).decode('utf-8')
+            msg = message = client.recv(1024).decode('utf-8').strip()
             
             if msg.startswith('/'):
                 if msg.startswith('/help'):
@@ -196,14 +192,14 @@ def connection(client, address, alias):
                     
                 elif msg.startswith('/save_chat'):
                     if save_chat:
-                        with open(f'chatlog_{timestamp}', 'r') as f:
+                        with open(f'chatlog_{timestamp}', 'r', encoding='utf-8') as f:
                             client.send(f'chatlog_{timestamp}+{f.read()}'.encode('utf-8'))
+                            client.send('Chat log saved succesfully.\n'.encode('utf-8'))
                             f.close()                   
                     
                 else: 
                     # COMMANDS FOR ADMIN
                     if alias.upper() == 'ADMIN':
-                        # COMMANDS THAT ADMIN CAN'T USE
                         if msg.startswith('/shutdown'):
                             stop_server(now)
 
@@ -219,7 +215,7 @@ def connection(client, address, alias):
                         
                         
                         elif msg[1:] == 'save_log' or msg[1:] == 'show_log':
-                            with open(f'serverlog_{timestamp}', 'r') as f:
+                            with open(f'serverlog_{timestamp}', 'r', encoding='utf-8') as f:
                                 client.send(f'serverlog_{timestamp}+{f.read()}'.encode('utf-8'))
                                 f.close()
                         
@@ -231,7 +227,7 @@ def connection(client, address, alias):
                                 # get the user's index in the aliases list then get the IP address using the index
                                 kick(user, addresses[aliases.index(user)], now)
                             else:
-                                client.send(f'User {user} doesn\'t exist.'.encode('utf-8'))                          
+                                client.send(f'User {user} doesn\'t exist.\n'.encode('utf-8'))                          
                         
                         
                         elif msg[1:] == 'banned':
@@ -241,6 +237,7 @@ def connection(client, address, alias):
                             for index, k in enumerate(ban, start=1):
                                 client.send(f'{index}. {k}'.encode('utf-8'))
                                 # print(f'{index}. {k}')
+                            client.send('\n'.encode('utf-8'))
                             del ban # free up memory
                         
                         
@@ -266,7 +263,7 @@ def connection(client, address, alias):
                                 user_ip = addresses[aliases.index(user)]
                                 kick(user, user_ip, now) # kick the user
         
-                                with open("ban-v2.txt",'a') as f: # append the banned user to the file.
+                                with open("ban-v2.txt",'a', encoding='utf-8') as f: # append the banned user to the file.
                                     f.write(f'{user}\n') 
                                     f.close()
                                 text = f'[{now}] <{user_ip}> - {user} was banned.'                  
@@ -274,7 +271,7 @@ def connection(client, address, alias):
                                 savelog(text)
                                 broadcast(f'{user} was banned by ADMIN.', now)  
                             else:
-                                client.send(f'User {user} doesn\'t exist.'.encode('utf-8'))  
+                                client.send(f'User {user} doesn\'t exist.\n'.encode('utf-8'))  
                             
                             
                         elif msg.startswith('/unban'):
@@ -285,41 +282,42 @@ def connection(client, address, alias):
                         elif msg.startswith('/pass'):
                             passw = msg[6:] # get the new password
                             if passw == password or passw == '':
-                                client.send('no'.encode('utf-8'))
+                                client.send('Invalid password. Type /help to read *password rules*.'.encode('utf-8'))
                             else:
                                 client.send('yes'.encode('utf-8'))
                                 if client.recv(1024).decode('utf-8').lower() == 'y':
                                     change_pass(passw, client, now)
                                 else:
-                                    client.send('Password change was cancelled.'.encode('utf-8'))
+                                    client.send('Password change was cancelled.\n'.encode('utf-8'))
+
 
                         elif msg.startswith('/showpass'):
-                            client.send(f'Your password is: {password}'.encode('utf-8'))
-                        
+                            client.send(f'Your password is: {password}\n'.encode('utf-8'))
+                        else:
+                            client.send('Invalid command or this command is for normal users only.'.encode('utf-8'))
                         
                     else: # COMMANDS FOR NORMAL USERS
-                        if msg.startswith('/alias'):
-                            if msg[7:] in aliases or msg[7:] == '':
-                                client.send('This alias is taken or it\'s an empty string.'.encode('utf-8'))
-                            else:
-                                change_alias(msg[7:], client, address, now)   
-                        elif msg.startswith('/whisper'):
-                            text = f'[{now}] <{address}> - {alias} whispers: {msg[9:]}'
+                        if msg.startswith('/alias ') and msg[7:] != '' and msg[7:] not in aliases and msg[7:] != alias and msg[7:].upper() != 'ADMIN':
+                            change_alias(msg[7:].strip(), client, address, now)
+                            
+                        elif msg.startswith('/whisper ') and msg[9:] != '':
+                            text = f'[{now}] <{address}> - {alias} whispers: {msg[9:].strip()}'
                             print(text)     
-                            savelog(text)     
+                            savelog(text)    
+                            client.send('Whisper sent.\n'.encode('utf-8')) 
                         else:
-                            client.send('Invalid command or you can\'t use ADMIN commands.'.encode('utf-8'))                            
+                            client.send('Invalid command (use /help to understand how to use commands) or you can\'t use ADMIN commands.\n'.encode('utf-8'))                            
+            
             else:                                        
-                broadcast(f'[{alias}] {msg}', now)
+                broadcast(f'[{alias}] {message}', now)
                 if save_chat:
-                    with open(f'chat_log_{timestamp}', 'a') as f:
-                        f.write(f'[now] [{alias}] {msg}\n')
+                    with open(f'chatlog_{timestamp}', 'a', encoding='utf-8') as f:
+                        f.write(f'[{now}] [{alias}] {message}\n')
                         f.close()               
-                
-                
                                
-        except:
+        except Exception as e:
             # if a client is not connected anymore, remove that client.
+            print(f"An error occurred: {e}.")
             if client in clients:
                 i = clients.index(client)
                 clients.remove(client)
@@ -347,7 +345,7 @@ def start():
         print(f'An error occurred: {e}.')
         print("You should try to change the public_ip to 'localhost'.")
         
-    server.listen(limit) # the server can only accept 30 connections.
+    server.listen(limit) 
     global timestamp
     timestamp = f'{time.strftime("%Y-%m-%d_%H-%M-%S")}.txt'
     text = f'''
@@ -385,11 +383,17 @@ def start():
                                             
         clients.append(client)       
         addresses.append(address)                
-        aliases.append(alias)               
-        client.send("Welcome to this chat room!\nYou're now connected to the server!".encode('utf-8'))
-        client.send("Type `/help` to see every commands available and how to use them.".encode('utf-8'))
-        client.send(f"Save chat mode is set to {save_chat}.".encode('utf-8'))
-        client.send("---------------------------------------------------------------\n".encode('utf-8'))
+        aliases.append(alias)        
+        
+        hello = f'''
+        ---------------------------------------------------------------
+        Welcome to this chat room! You're now connected to the server!
+        Type `/help` to see every commands available and how to use them.
+        Save chat mode is set to {save_chat}.
+        ---------------------------------------------------------------
+        '''      
+        client.send(f'\n{hello}\n'.encode('utf-8'))
+        
         text = f'[{now}] <{str(address)}> - ({alias}) has joined the chat.'    
         print(text)
         savelog(text)
@@ -399,5 +403,14 @@ def start():
 
 
 if __name__ == '__main__':
+    a = ''
+    while a != 'y' and a != 'n': # save the chat log to a file.
+        a = input('Do you want to save the chat log? (y/n): ')
+        if a == 'y':
+            save_chat = True
+        elif a == 'n':
+            save_chat = False
+        else:
+            print('Invalid input. Please enter y or n.')
     start()
         
