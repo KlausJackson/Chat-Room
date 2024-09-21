@@ -1,4 +1,4 @@
-import threading as th, socket as s, os
+import threading as th, socket as s, os, time
 
 
 ip = input('IP address of the server: ')
@@ -15,9 +15,9 @@ def receive():
     '''Receive messages from the server.'''
     while 1:
         try:
-            message = client.recv(1024).decode('utf-8')     
+            msg = client.recv(1024).decode('utf-8')     
             # if the message is 'alias', the client sends their alias to the server.    
-            if message == 'alias':
+            if msg == 'alias':
                 client.send(alias.encode('utf-8'))                           
                 resp = client.recv(1024).decode('utf-8')
                 
@@ -30,10 +30,16 @@ def receive():
                 elif resp == 'ban':
                     print('Connection refused. You\'re either banned from the server or this alias has been taken already or an empty string, Please try again.') 
                     os._exit(0)  
+            
+            elif 'log_' in msg[0:11]:
+                timestamp, log = msg.split('+')
+                with open(timestamp, 'a') as f:
+                    f.write(log)   
+                    f.close() 
                                        
             else:
-                print(message)
-                if message == 'You were kicked by ADMIN.':
+                print(msg)
+                if msg == 'You were kicked by ADMIN.':
                     os._exit(0)                             
                     
         except Exception as e:
@@ -46,39 +52,46 @@ def typing():
     '''Send messages to the server.'''
     global alias
     while 1:
-        message = f'[{alias}] {input()}'            
+        msg = input()     
+               
+        if msg.startswith('/alias'):
+            if alias.upper() == 'ADMIN': # check if the alias is ADMIN
+                print('ADMIN can\'t change their alias.')
+            elif msg[7:].upper() == 'ADMIN': # check if the new alias is ADMIN
+                # 7 is the length of '/alias '.
+                print('You can\'t pretend to be ADMIN.')
+            else:    
+                client.send(msg.encode('utf-8'))
+                if client.recv(1024).decode('utf-8') == 'yes': # recieve confirmation from the server
+                    alias = msg[7:] # update the new alias
+                # check if client receive the response from the server or not about alias already been taken or an empty string.
             
-        if message[len(alias) + 3:].startswith('/'):    
-            # change alias (only for non-ADMIN)
-            if message[len(alias) + 3:].startswith('/alias'):
-                if alias.upper() == 'ADMIN':
-                    print('You can\'t change your alias because you\'re ADMIN.')
-                elif message[len(alias) + 3 + 7:].upper() == 'ADMIN':
-                    print('You can\'t do that, you\'re not an ADMIN.')
-                else:    
-                    client.send(message[len(alias) + 3:].encode('utf-8'))
-                    alias = message[len(alias) + 3 + 7:]  
-            
-            # check if the alias is ADMIN, the commands still won't work if you modify this file
-            # because the server is what checks the commands, not the client.                 
-            elif alias.upper() == 'ADMIN':
-                
-                # commands that don't need any parameters
-                if message[len(alias) + 3:].startswith('/pass'): # change password
-                    client.send(message[len(alias) + 3:].encode('utf-8'))    
-                elif message[len(alias) + 3:].startswith('/showpass'): # show password
-                    client.send(message[len(alias) + 3:].encode('utf-8')) 
-                elif message[len(alias) + 3:].startswith('/q'): # quit
-                    print('Shutting down the server.')
-                    os._exit(0)                     
-                
-                # commands that need parameters, ex: /kick <alias>      
-                else:    
-                    client.send(f'{message[len(alias) + 3:]}'.encode('utf-8'))                        
-            else:
-                print('Commands are for ADMIN only.')
+        elif msg.startswith('/shutdown'):
+            if alias.upper() == 'ADMIN':
+                client.send(msg.encode('utf-8'))
+                print('Shutting down the server.')
+                os._exit(0)  
+        
+        elif msg.startswith('/pass'):
+            if alias.upper() == 'ADMIN':
+                client.send(msg.encode('utf-8'))
+                # check for error if the user receive the response from the server or not.
+                if client.recv(1024).decode('utf-8') == 'no':
+                    print('1. Password can\'t be the same as your old password.')
+                    print('2. Password can\'t be an empty string.')
+                elif client.recv(1024).decode('utf-8') == 'yes':
+                    confirmation = input("Type 'y' to confirm the new password, other to cancel:")
+                    client.send(confirmation.encode('utf-8'))
+
+        elif msg.startswith('save_log'):
+            all_lines = client.recv(1024).decode('utf-8')
+            now = time.localtime() # save time of the log.
+            with open('serverlog_'+str(now.strftime("%Y-%m-%d_%H-%M-%S"))+'.txt', 'a') as f:
+                f.write(all_lines)   
+                f.close()
+
         else:
-            client.send(message.encode('utf-8'))    
+            client.send(msg.encode('utf-8'))    
                 
         
 receive = th.Thread(target = receive).start()     

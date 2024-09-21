@@ -32,9 +32,10 @@ def get_public_ip():
         return False
     
     
-clients = [] 
-aliases = []
-addresses = [] 
+clients = [] # store the clients
+aliases = [] # store the aliases
+addresses = [] # store the addresses
+
 public_ip = get_public_ip()
 if not public_ip:
     public_ip = 'localhost'    
