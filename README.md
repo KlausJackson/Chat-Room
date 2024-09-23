@@ -55,9 +55,15 @@ They're all Python default library so no need to install anything except for Pyt
 
 ## Preview
 
+### Simple Version (no ADMIN role)
+
 Preview of the simple version scripts on the same machine using 3 command prompt windows.
 
 ![Alt Text](example.png)
+
+### Advance Version (with ADMIN role)
+
+Not available yet.
 
 ## Usage
 
