@@ -14,7 +14,7 @@
 ![Stars](https://img.shields.io/github/stars/KlausJackson/Chat-Room.svg)
 ![Watchers](https://img.shields.io/github/watchers/KlausJackson/Chat-Room.svg)
 
-Python implementation of a simple chat room using TCP protocol.
+Python implementation of a simple chat room using TCP protocol. <br>
 For fun only. I'm a newbie, please don't throw rocks.
 
 This repo's first commit: [Jan 18, 2024](https://github.com/KlausJackson/Chat-Room/commits/main?after=2637ba4f72031e8af6516213d424f0ad5ac2f55d+69)
@@ -22,9 +22,9 @@ This repo's first commit: [Jan 18, 2024](https://github.com/KlausJackson/Chat-Ro
 ## Credits
 
 Original idea and code: [NeuralNine](https://www.youtube.com/@NeuralNine) <br>
-Simple version: [Link](https://youtu.be/3UOyky9sEQY?si=ZfhIld_oTzGdTsgC) <br>
-Advance version: [Link](https://youtu.be/F_JDA96AdEI?si=naX_kLDcCWYCMohQ) <br>
-C++ version: [Link](https://github.com/cjchirag7/chatroom-cpp) (only works on Linux/MacOs, doesn't have any features - at the time that I'm writing this line) <br>
+Simple version: [Link to YouTube video](https://youtu.be/3UOyky9sEQY?si=ZfhIld_oTzGdTsgC) <br>
+Advance version: [Link to YouTube video](https://youtu.be/F_JDA96AdEI?si=naX_kLDcCWYCMohQ) <br>
+C++ version: [Link to Github repo](https://github.com/cjchirag7/chatroom-cpp) (only works on Linux/MacOs, doesn't have any features - at the time that I'm writing this line) <br>
 
 I'm trying to develop a GUI version that runs on Windows/MacOS/Linux, I'll update repo link when it's available. The development processs is gonna take a long time because I have other things to do. <br>
 

@@ -27,6 +27,7 @@ def get_public_ip():
 
 
 help = """
+----------------------------------------------------------------------------
 Advanced Chat Room v2
 
 Commands for all users:
@@ -63,6 +64,7 @@ One command that normal users can use but ADMIN can't:
 
 Author: Klaus Jackson (https://github.com/KlausJackson)
 For more infomation about this TCP Chat Room, visit https://github.com/KlausJackson/Chat-Room
+----------------------------------------------------------------------------
 """
 
 
@@ -99,8 +101,7 @@ password = '123' # you can use the pass.txt file or something to store the passw
 #     password = f.read().strip()
 #     f.close()
 
-public_ip = get_public_ip()  # edit here
-# example: public_ip = 'localhost' 
+public_ip = get_public_ip() 
 if not public_ip:
     public_ip = 'localhost'
 
@@ -130,9 +131,7 @@ def change_alias(alias, client, address, now):
     text = f'[{now}] <{address}> - {old_alias} has changed to {alias}.'
     print(text)
     savelog(text)
-    print('saving')
     aliases[clients.index(client)] = alias
-    print(aliases[clients.index(client)])
     client.send('Alias changed successfully!\n'.encode('utf-8'))
 
 
@@ -192,10 +191,13 @@ def connection(client, address, alias):
                     
                 elif msg.startswith('/save_chat'):
                     if save_chat:
-                        with open(f'chatlog_{timestamp}', 'r', encoding='utf-8') as f:
-                            client.send(f'chatlog_{timestamp}+{f.read()}'.encode('utf-8'))
-                            client.send('Chat log saved succesfully.\n'.encode('utf-8'))
-                            f.close()                   
+                        try:
+                            with open(f'chatlog_{timestamp}', 'r', encoding='utf-8') as f:
+                                client.send(f'chatlog_{timestamp}+{f.read()}'.encode('utf-8'))
+                                client.send('Chat log saved succesfully.\n'.encode('utf-8'))
+                                f.close()     
+                        except Exception as e:
+                            client.send(f'An error occurred: {e}.\n'.encode('utf-8'))              
                     
                 else: 
                     # COMMANDS FOR ADMIN
@@ -215,9 +217,12 @@ def connection(client, address, alias):
                         
                         
                         elif msg[1:] == 'save_log' or msg[1:] == 'show_log':
-                            with open(f'serverlog_{timestamp}', 'r', encoding='utf-8') as f:
-                                client.send(f'serverlog_{timestamp}+{f.read()}'.encode('utf-8'))
-                                f.close()
+                            try:
+                                with open(f'serverlog_{timestamp}', 'r', encoding='utf-8') as f:
+                                    client.send(f'serverlog_{timestamp}+{f.read()}'.encode('utf-8'))
+                                    f.close()
+                            except Exception as e:
+                                client.send(f'An error occurred: {e}.\n'.encode('utf-8'))
                         
                         
                         elif msg.startswith('/kick'):
@@ -299,6 +304,7 @@ def connection(client, address, alias):
                     else: # COMMANDS FOR NORMAL USERS
                         if msg.startswith('/alias ') and msg[7:] != '' and msg[7:] not in aliases and msg[7:] != alias and msg[7:].upper() != 'ADMIN':
                             change_alias(msg[7:].strip(), client, address, now)
+                            alias = msg[7:].strip() # update the new alias
                             
                         elif msg.startswith('/whisper ') and msg[9:] != '':
                             text = f'[{now}] <{address}> - {alias} whispers: {msg[9:].strip()}'
@@ -307,7 +313,8 @@ def connection(client, address, alias):
                             client.send('Whisper sent.\n'.encode('utf-8')) 
                         else:
                             client.send('Invalid command (use /help to understand how to use commands) or you can\'t use ADMIN commands.\n'.encode('utf-8'))                            
-            
+                            continue
+                        
             else:                                        
                 broadcast(f'[{alias}] {message}', now)
                 if save_chat:

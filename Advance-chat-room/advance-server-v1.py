@@ -27,6 +27,7 @@ def get_public_ip():
 
 
 help = """
+----------------------------------------------------------------------------
 Advanced Chat Room v1
 
 Commands for all users:
@@ -63,6 +64,7 @@ One command that normal users can use but ADMIN can't:
 
 Author: Klaus Jackson (https://github.com/KlausJackson)
 For more infomation about this TCP Chat Room, visit https://github.com/KlausJackson/Chat-Room
+----------------------------------------------------------------------------
 """
 
 

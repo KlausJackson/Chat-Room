@@ -69,7 +69,7 @@ def connection(client, address, alias):
             clients.remove(client)
             alias = aliases[i]
             aliases.remove(alias)
-            print(f'{alias} has left the chat.'.encode('utf-8'))
+            print(f'{alias} has left the chat.')
             broadcast(f'{alias} has left the chat.'.encode('utf-8'))
             break
 

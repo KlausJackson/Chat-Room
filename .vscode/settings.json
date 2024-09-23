@@ -1,8 +1,0 @@
-{
-    "files.associations": {
-        "thread": "cpp",
-        "iostream": "cpp",
-        "ostream": "cpp"
-    },
-    "cmake.sourceDirectory": "E:/Work/Github/Chat-Room/Simple-chat-room/C++"
-}

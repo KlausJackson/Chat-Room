@@ -1,6 +1,10 @@
 import threading as th, socket as s, os, time
 
-
+# the client side only send the message to the server, the server handles the message. 
+# server side detects if the message is a command or not, based on the first character of the message.
+# server side will send a message if the command is invalid or you're not authorized to use ADMIN commands.
+# so handling commands on the client side is not necessary, except for /save_chat, /save_log, /pass.
+            
 def receive():
     '''Receive messages from the server.'''
     while 1:
@@ -23,7 +27,7 @@ def receive():
             
             elif 'log_' in msg[0:11]:
                 timestamp, log = msg.split('+')
-                with open(timestamp, 'a') as f:
+                with open(timestamp, 'a', encoding='utf-8') as f:
                     f.write(log)   
                     f.close() 
                                        
@@ -44,17 +48,19 @@ def typing():
     while 1:
         try:
             msg = input().strip()     
-                
-            if msg.startswith('/alias '): # 7 is the length of '/alias '.
-                if msg[7:] != '' and msg[7:] != 'ADMIN' and msg[7:] != alias:
-                    if alias.upper() == 'ADMIN': print('ADMIN can\'t change their alias.\n')
-                # if you delete the above condition, the client side will probably freeze for a while.
-                    else:    
-                        client.send(msg.encode('utf-8'))
-                        if client.recv(1024).decode('utf-8') == 'Alias changed successfully!': 
-                            alias = msg[7:] # update the new alias
-                else: print('Invalid alias. Please try again. Type /help to read *alias rules*.\n')
 
+            if msg.startswith('/alias '): # 7 is the length of '/alias '.
+                print('Changing alias...')
+                if msg[7:] != '' and msg[7:] != 'ADMIN' and msg[7:] != alias and alias.upper() != 'ADMIN':
+                # if you delete the above condition, the client side will probably freeze for a while.   
+                    print('fhweghwr')
+                    client.send(msg.encode('utf-8'))
+                    if client.recv(1024).decode('utf-8') == 'Alias changed successfully!': 
+                        alias = msg[7:] # update the new alias
+                        print('hello')
+                    else: print('Invalid alias. Please try again. Type /help to read *alias rules*.\n')
+                else: print('Invalid alias. Please try again. Type /help to read *alias rules*.\n')
+                
 
             elif msg.startswith('/shutdown') and alias.upper() == 'ADMIN':
                 client.send(msg.encode('utf-8'))
@@ -74,7 +80,8 @@ def typing():
                     f.write(log)   
                     f.close()
 
-            else: client.send(msg.encode('utf-8'))    
+            else: client.send(msg.encode('utf-8'))
+                
         except Exception as e:
             print(f"Error: {e}.\nTry restarting the client if it crashes.\n") 
             break     
@@ -82,8 +89,8 @@ def typing():
                       
 
 if __name__ == '__main__':
-    # ip = input('IP address of the server: ')
-    ip = '192.168.1.4'    #localhost
+    ip = input('IP address of the server: ')
+    # ip = 'localhost' or '127.0.0.1' if you're running the server on the same machine.
     client = s.socket(s.AF_INET, s.SOCK_STREAM)
     alias = input("What do you wish to be called? - ") 
     if alias.upper() == 'ADMIN': passw = input('Enter pass: ')
