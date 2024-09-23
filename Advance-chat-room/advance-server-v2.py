@@ -1,6 +1,5 @@
 import threading as th, socket as s, time, subprocess, re, os, bcrypt
 
-
 port = 8000 # you can change the port number.
 limit = 30 # the server can only accept 30 connections. You can change this number.
 
@@ -89,7 +88,7 @@ def get_ban():
             # for line in f:
             #     ban.append(line)    # this approach is also ok to use.        
     except Exception as e:
-        text = f"An error occurred while reading ban-v1.txt: {e}"
+        text = f"An error occurred while reading ban-v2.txt: {e}"
         print(text)
         savelog(text)
     return ban
@@ -144,6 +143,7 @@ def unban(user, user_ip, client, now):
                 f.write(f'{banned_user}\n')
             f.close()
             
+            
         broadcast(f'{user} has been unbanned.', now)
         text = f'[{now}] <{user_ip}> - {user} has been unbanned.'
         print(text)
@@ -171,7 +171,8 @@ def broadcast(message, now):
     '''Display the message.'''  
     if isinstance(message, bytes):
         message = message.decode('utf-8')
-    for client in clients:   
+    for client in clients:
+        client.send(f'--------------------------------'.encode('utf-8'))   
         client.send(f'[{now}] {message}'.encode('utf-8'))
 
 
@@ -271,14 +272,14 @@ def connection(client, address, alias):
                                 with open("ban-v2.txt",'a', encoding='utf-8') as f: # append the banned user to the file.
                                     f.write(f'{user}\n') 
                                     f.close()
+                                    
                                 text = f'[{now}] <{user_ip}> - {user} was banned.'                  
                                 print(text)    
                                 savelog(text)
                                 broadcast(f'{user} was banned by ADMIN.', now)  
                             else:
                                 client.send(f'User {user} doesn\'t exist.\n'.encode('utf-8'))  
-                            
-                            
+                               
                         elif msg.startswith('/unban'):
                             user = msg[7:] # get the alias
                             if user in aliases and user != aliases[clients.index(client)]:
@@ -339,7 +340,7 @@ def connection(client, address, alias):
 
        
 
-def start():
+def go():
     '''AF_INET : the address domain of the socket. 
     Indicate that socket can be used for communication between any hosts connected to the Internet.
     SOCK_STREAM : the type of socket. Means that data or characters are read in a continuous flow.'''
@@ -348,66 +349,61 @@ def start():
     server.setsockopt(s.SOL_SOCKET, s.SO_REUSEADDR, 1)
     try:
         server.bind((public_ip, port))
-    except Exception as e:
-        print(f'An error occurred: {e}.')
-        print("You should try to change the public_ip to 'localhost'.")
+        server.listen(limit)
         
-    server.listen(limit) 
-    global timestamp
-    timestamp = f'{time.strftime("%Y-%m-%d_%H-%M-%S")}.txt'
-    text = f'''
-    Time : {time.strftime("%Y-%m-%d %H:%M:%S", time.localtime())}
-    Server is running...
-    Server is using port {port}.
-    Your server IP address is: {public_ip}.
-    '''
-    print(text)
-    savelog(text)
-
-
-    while 1:   
-        client, address = server.accept()
-        client.send("alias".encode('utf-8'))
-        alias = client.recv(1024).decode('utf-8')
-        now = time.strftime("%Y-%m-%d %H:%M:%S", time.localtime())
-        ban = get_ban()
-            
-        if alias in ban or alias in aliases or alias == '':
-            client.send('ban'.encode('utf-8'))
-            client.close()
-            continue          
-          
-        if alias.upper() == 'ADMIN': # if the alias is ADMIN, ask for the password.
-            client.send('pass'.encode('utf-8'))
-            passw = client.recv(1024).decode('utf-8') # get the password from the client.
-            if passw != password: # if the password is wrong, close the connection.
-                client.send('no'.encode('utf-8'))
-                text = f'[{now}] - Someone tried to log in ADMIN.'
-                print(text)
-                savelog(text)
-                client.close()
-                continue      
-                                            
-        clients.append(client)       
-        addresses.append(address)                
-        aliases.append(alias)        
-        
-        hello = f'''
-        ---------------------------------------------------------------
-        Welcome to this chat room! You're now connected to the server!
-        Type `/help` to see every commands available and how to use them.
-        Save chat mode is set to {save_chat}.
-        ---------------------------------------------------------------
-        '''      
-        client.send(f'\n{hello}\n'.encode('utf-8'))
-        
-        text = f'[{now}] <{str(address)}> - ({alias}) has joined the chat.'    
+        global timestamp
+        timestamp = f'{time.strftime("%Y-%m-%d_%H-%M-%S")}.txt'
+        text = f'''
+        Time : {time.strftime("%Y-%m-%d %H:%M:%S", time.localtime())}
+        Server is running...
+        Server is using port {port}.
+        Your server IP address is: {public_ip}.
+        '''
         print(text)
         savelog(text)
-        broadcast(f"{alias} has joined the chat.".encode('utf-8'), now)           
-        client_thread = th.Thread(target=connection, args=(client, address, alias))
-        client_thread.start()
 
+
+        while 1:   
+            client, address = server.accept()
+            client.send("alias".encode('utf-8'))
+            alias = client.recv(1024).decode('utf-8')
+            now = time.strftime("%Y-%m-%d %H:%M:%S", time.localtime())
+            ban = get_ban()
+                
+            if alias in ban or alias in aliases or alias == '':
+                client.send('ban'.encode('utf-8'))
+                client.close()
+                continue          
+            
+            if alias.upper() == 'ADMIN': # if the alias is ADMIN, ask for the password.
+                client.send('pass'.encode('utf-8'))
+                passw = client.recv(1024).decode('utf-8') # get the password from the client.
+                if passw != password: # if the password is wrong, close the connection.
+                    client.send('no'.encode('utf-8'))
+                    text = f'[{now}] - Someone tried to log in ADMIN.'
+                    print(text)
+                    savelog(text)
+                    client.close()
+                    continue      
+                                                
+            clients.append(client)       
+            addresses.append(address)                
+            aliases.append(alias)        
+            
+            hello = f'---------------------------------------------------------------\nWelcome to this chat room! You\'re now connected to the server!\nType `/help` to see every commands available and how to use them.\nSave chat mode is set to {save_chat}.\n---------------------------------------------------------------'      
+            client.send(f'\n{hello}\n'.encode('utf-8'))
+            
+            text = f'[{now}] <{str(address)}> - ({alias}) has joined the chat.'    
+            print(text)
+            savelog(text)
+            broadcast(f"{alias} has joined the chat.".encode('utf-8'), now)           
+            client_thread = th.Thread(target=connection, args=(client, address, alias))
+            client_thread.start()        
+        
+    except Exception as e:
+        print(f'An error occurred: {e}.')
+        os._exit(0)
+     
 
 if __name__ == '__main__':
     a = ''
@@ -419,5 +415,5 @@ if __name__ == '__main__':
             save_chat = False
         else:
             print('Invalid input. Please enter y or n.')
-    start()
+    go()
         

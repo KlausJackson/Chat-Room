@@ -27,10 +27,14 @@ def receive():
             
             elif 'log_' in msg[0:11]:
                 timestamp, log = msg.split('+')
-                with open(timestamp, 'a', encoding='utf-8') as f:
+                with open(timestamp, 'w', encoding='utf-8') as f:
                     f.write(log)   
                     f.close() 
-                                       
+                           
+            elif msg == 'yes': # signal to confirm the new password.
+                confirmation = input("Type 'y' to confirm the new password, other to cancel:")
+                client.send(confirmation.encode('utf-8'))  
+                                                     
             else:
                 print(msg)
                 if msg == 'You were kicked by ADMIN.': os._exit(0)                             
@@ -50,15 +54,9 @@ def typing():
             msg = input().strip()     
 
             if msg.startswith('/alias '): # 7 is the length of '/alias '.
-                print('Changing alias...')
                 if msg[7:] != '' and msg[7:] != 'ADMIN' and msg[7:] != alias and alias.upper() != 'ADMIN':
                 # if you delete the above condition, the client side will probably freeze for a while.   
-                    print('fhweghwr')
                     client.send(msg.encode('utf-8'))
-                    if client.recv(1024).decode('utf-8') == 'Alias changed successfully!': 
-                        alias = msg[7:] # update the new alias
-                        print('hello')
-                    else: print('Invalid alias. Please try again. Type /help to read *alias rules*.\n')
                 else: print('Invalid alias. Please try again. Type /help to read *alias rules*.\n')
                 
 
@@ -66,19 +64,6 @@ def typing():
                 client.send(msg.encode('utf-8'))
                 print('Shutting down the server.')
                 os._exit(0)  
-            
-            
-            elif msg.startswith('/pass') and alias.upper() == 'ADMIN' and msg[6:] != '':
-                client.send(msg.encode('utf-8'))
-                if not client.recv(1024).decode('utf-8').startswith('Invalid password.'):
-                    confirmation = input("Type 'y' to confirm the new password, other to cancel:")
-                    client.send(confirmation.encode('utf-8'))
-
-            elif msg.startswith('save_log') and alias.upper() == 'ADMIN':
-                timestamp, log = client.recv(1024).decode('utf-8').split('+')
-                with open(timestamp, 'a') as f:
-                    f.write(log)   
-                    f.close()
 
             else: client.send(msg.encode('utf-8'))
                 
@@ -89,7 +74,7 @@ def typing():
                       
 
 if __name__ == '__main__':
-    ip = input('IP address of the server: ')
+    ip = input('IP address of the server: ').strip()
     # ip = 'localhost' or '127.0.0.1' if you're running the server on the same machine.
     client = s.socket(s.AF_INET, s.SOCK_STREAM)
     alias = input("What do you wish to be called? - ") 

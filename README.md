@@ -15,7 +15,9 @@
 ![Watchers](https://img.shields.io/github/watchers/KlausJackson/Chat-Room.svg)
 
 Python implementation of a simple chat room using TCP protocol. <br>
-For fun only. I'm a newbie, please don't throw rocks.
+For fun only. I'm a newbie, please don't throw rocks. <br>
+
+It's best to deploy this on a cloud or use locally. I had the chance to test it on 2 different machines and the code did not work as expected. The reason is because the portal doesn't open.
 
 This repo's first commit: [Jan 18, 2024](https://github.com/KlausJackson/Chat-Room/commits/main?after=2637ba4f72031e8af6516213d424f0ad5ac2f55d+69)
 
@@ -63,7 +65,7 @@ Preview of the simple version scripts on the same machine using 3 command prompt
 
 ### Advance Version (with ADMIN role)
 
-Not available yet.
+No previews available yet.
 
 ## Usage
 

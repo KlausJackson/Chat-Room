@@ -1,12 +1,10 @@
 import threading as th, socket as s, os
 
-
-# ip = input('IP address of the server: ')
-ip = '127.0.0.1'    #localhost
+ip = input('IP address of the server: ').strip()
+# ip = '127.0.0.1' # or 'localhost'
 client = s.socket(s.AF_INET, s.SOCK_STREAM)
-alias = input("What do you wish to be called? - ") 
-client.connect((ip, 8000))
-
+alias = input("What do you wish to be called? - ").strip() 
+client.connect((ip, 55555))
 
 def receive():
     '''Receive messages from the server.'''
@@ -27,18 +25,22 @@ def receive():
             print("-------------------------------")
             print("Something's wrong. Closing.")
             client.close()   
-            break     
+            os._exit(0)     
                 
                 
 def typing():
     '''Send messages to the server.'''
     while 1:
-        message = f'[{alias}] {input()}'    
+        message = input().strip()
+        if message == '/exit':
+            client.close()
+            break
         client.send(message.encode('utf-8'))
         
         
-receive = th.Thread(target = receive).start() 
-typing = th.Thread(target = typing).start()   
+if __name__ == '__main__': 
+    receive = th.Thread(target = receive).start() 
+    typing = th.Thread(target = typing).start()   
 
                 
                 

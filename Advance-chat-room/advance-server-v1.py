@@ -36,14 +36,14 @@ Commands for all users:
 
 These commands are for ADMIN only:
 
-/kick : to kick a user.
-/ban : to ban a user (only ban the alias - v2 server, ban IP address - v1 server).
-/unban : to unban a user.
+/kick abc: to kick a user.
+/ban abc: to ban a user (only ban the alias - v2 server, ban IP address - v1 server).
+/unban abc: to unban a user.
 /list : to show list of users who are in the server.
 /banned : to show list of users who are banned.
 /show_log : to show the log of the server.
 /save_log : to save the log of the server.
-/pass : to change your ADMIN password. Wait for input field to enter your new password.
+/pass abc: to change your ADMIN password. Wait for input field to enter your new password.
 /shutdown : to shut down the server.
 
 *Password rules*
@@ -53,7 +53,7 @@ These commands are for ADMIN only:
 
 One command that normal users can use but ADMIN can't: 
 /alias : to change your alias.
-/whisper : to send a private message to ADMIN (ADMIN can still read later when they're not online). You can use this to report someone or ask for help. ADMIN will use chat log and ban the user if necessary.
+/whisper abc : to send a private message to ADMIN (ADMIN can still read later when they're not online). You can use this to report someone or ask for help. ADMIN will use chat log and ban the user if necessary.
 
 *Alias rules*
 1. Alias can't be 'ADMIN'.
@@ -103,11 +103,9 @@ password = '123'  # you can create a pass.txt file or something to store the pas
 #     f.close()
     
     
-public_ip = get_public_ip()  # edit here
-# example: public_ip = 'localhost' 
+public_ip = get_public_ip()
 if not public_ip:
     public_ip = 'localhost'
-    
 
 def stop_server(now):
     text = f'[{now}] - Server shutting down...'
@@ -135,7 +133,6 @@ def change_alias(alias, client, address, now):
     text = f'[{now}] <{address}> - {old_alias} has changed to {alias}.'
     print(text)
     savelog(text)
-    print('saving')
     aliases[clients.index(client)] = alias
     print(aliases[clients.index(client)])
     client.send('Alias changed successfully!\n'.encode('utf-8'))
@@ -178,6 +175,7 @@ def broadcast(message, now):
     if isinstance(message, bytes):
         message = message.decode('utf-8')
     for client in clients:   
+        client.send(f'--------------------------------'.encode('utf-8')) 
         client.send(f'[{now}] {message}'.encode('utf-8'))
 
 
@@ -197,10 +195,13 @@ def connection(client, address, alias):
                     
                 elif msg.startswith('/save_chat'):
                     if save_chat:
-                        with open(f'chatlog_{timestamp}', 'r', encoding='utf-8') as f:
-                            client.send(f'chatlog_{timestamp}+{f.read()}'.encode('utf-8'))
-                            client.send('Chat log saved succesfully.\n'.encode('utf-8'))
-                            f.close()   
+                        try:
+                            with open(f'chatlog_{timestamp}', 'r', encoding='utf-8') as f:
+                                client.send(f'chatlog_{timestamp}+{f.read()}'.encode('utf-8'))
+                                client.send('Chat log saved succesfully.\n'.encode('utf-8'))
+                                f.close()     
+                        except Exception as e:
+                            client.send(f'An error occurred: {e}.\n'.encode('utf-8')) 
 
                 else: 
                     # COMMANDS FOR ADMIN
@@ -220,9 +221,12 @@ def connection(client, address, alias):
                         
                         
                         elif msg[1:] == 'save_log' or msg[1:] == 'show_log':
-                            with open(f'serverlog_{timestamp}', 'r', encoding='utf-8') as f:
-                                client.send(f'serverlog_{timestamp}+{f.read()}'.encode('utf-8'))
-                                f.close()
+                            try:
+                                with open(f'serverlog_{timestamp}', 'r', encoding='utf-8') as f:
+                                    client.send(f'serverlog_{timestamp}+{f.read()}'.encode('utf-8'))
+                                    f.close()
+                            except Exception as e:
+                                client.send(f'An error occurred: {e}.\n'.encode('utf-8'))
                         
                         
                         elif msg.startswith('/kick'):
@@ -274,7 +278,7 @@ def connection(client, address, alias):
                         elif msg.startswith('/pass'):
                             passw = msg[6:] # get the new password
                             if passw == password or passw == '':
-                                client.send('no'.encode('utf-8'))
+                                client.send('Invalid password. Type /help to read *password rules*.'.encode('utf-8'))
                             else:
                                 client.send('yes'.encode('utf-8'))
                                 if client.recv(1024).decode('utf-8').lower() == 'y':
@@ -291,6 +295,7 @@ def connection(client, address, alias):
                     else: # COMMANDS FOR NORMAL USERS
                         if msg.startswith('/alias ') and msg[7:] != '' and msg[7:] not in aliases and msg[7:] != alias and msg[7:].upper() != 'ADMIN':
                             change_alias(msg[7:].strip(), client, address, now)
+                            alias = msg[7:].strip() # update the new alias
                             
                         elif msg.startswith('/whisper ') and msg[9:] != '':
                             text = f'[{now}] <{address}> - {alias} whispers: {msg[9:].strip()}'
