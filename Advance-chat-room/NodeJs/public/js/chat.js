@@ -18,8 +18,24 @@ const locTemplate = document.querySelector('#location-template').innerHTML;
 const fileTemplate = document.querySelector('#file-template').innerHTML;
 const sidebarTemplate = document.querySelector('#sidebar-template').innerHTML;
 
-const { username, room } = Qs.parse(location.search, { ignoreQueryPrefix: true }); // parse the query string
+const { username, room, password } = Qs.parse(location.search, { ignoreQueryPrefix: true }); // parse the query string
 // ignoreQueryPrefix : ignore the question mark in the query string.
+// const chatUrl = `/chat.html?username=${username}&room=${room}`;
+// window.location.href = chatUrl
+
+// Parse the current URL to get username and room
+const currentUrl = new URL(window.location.href);
+const urlParams = new URLSearchParams(currentUrl.search);
+
+const user = urlParams.get('username');
+const r = urlParams.get('room');
+const p = urlParams.get('password');
+
+if (p) {
+    urlParams.delete('password');
+    currentUrl.search = urlParams.toString(); // Update the URL's search property
+    window.history.pushState({}, '', currentUrl); // Update the browser's URL without reloading the page
+}
 
 
 
@@ -185,9 +201,15 @@ function countdown(seconds) {
 };
 
 
-socket.emit('join', { username, room }, (error) => {
+
+
+// username, room get from the query string
+socket.emit('join', { username, room, password }, (error) => {
     if (error) {
         alert(error); 
         location.href = '/'; // redirect to the homepage
-    }
+    } 
 });
+
+
+

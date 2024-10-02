@@ -21,23 +21,37 @@
             <form action="/chat.html">
                 <div class="input1">
                     <label>Enter username</label>
-                    <input type="text" name="username" placeholder="username" required>
+                    <input type="text" id="username" name="username" placeholder="username" required>
                 </div>
                 <div class="input2">
                     <label>Enter room number</label>
                     <input type="text" name="room" placeholder="room" required> 
+                </div>
+                <div class="input3">
+                    <label for="password">Password</label>
+                    <input type="password" id="password" name="password" placeholder="password for ADMIN" required disabled>
                 </div>
                 <button type="submit">Join</button>
             </form>
         </div>
     </div>
 
+    <script>
+        window.onload = function() {
+            document.getElementById('username').value = '';
+        };
 
-
-
-
-
-
+        const usernameInput = document.getElementById('username');
+        const passwordInput = document.getElementById('password');
+    
+        usernameInput.addEventListener('input', function() {
+            if (usernameInput.value.trim().toLowerCase() === 'admin') {
+                passwordInput.removeAttribute('disabled');
+            } else {
+                passwordInput.setAttribute('disabled', 'true');
+            }
+        });
+    </script>
 
 </body>
 </html>

@@ -29,16 +29,8 @@ const io = socketio(server); // socket.io expects to be called with the raw http
 const port = process.env.port || 3000; 
 const publicpath = path.join(__dirname, '../public');
 
+// Middleware
 app.use(express.static(publicpath));
-
-// testing
-// app.get('/chat', (req, res) => {
-//     res.sendFile(path.join(publicPath, 'chat.html')); // Serve your chat page
-// }); // Define a route for the chat page
-// app.use((req, res, next) => {
-//     res.status(404).sendFile(path.join(__dirname, '../public/404.html'));
-// }); // set up 404.html
-
 
 
 //----------------------------------------------------------------------------------------
@@ -47,12 +39,19 @@ io.on('connection', (socket) => {
     console.log('New WebSocket connection');
     
     // handle joining
-    socket.on('join', ({ username, room }, callback) => {
+    socket.on('join', ({ username, room, password }, callback) => {
         // check if the user is banned
         const ip = socket.handshake.address; // get ip address of the client
         const ban = getBanned();
         if (ban.find((user) => user.ip === ip)) {
             return callback('You are banned.');
+        }
+
+        if (password) {
+            const pass = getpass();
+            if (pass !== password) {
+                return callback('Incorrect password.');
+            }
         }
 
         // add user to the users array
@@ -84,6 +83,9 @@ io.on('connection', (socket) => {
     // handle messages
     socket.on('message', (message, callback) => {
         const user = get(socket.id);
+        if (!user) {
+            return;
+        }
         const filter = new Filter();
         if (filter.isProfane(message)) {
             return callback('No profanity.');
@@ -96,6 +98,9 @@ io.on('connection', (socket) => {
     // handle file sharing
     socket.on('file', (file) => {
         const user = get(socket.id);
+        if (!user) {
+            return;
+        }
         const alias = user.username;
         console.log('file received from client');        
         const { name, data, isImage, isVideo } = file; // import file from utils
@@ -126,6 +131,9 @@ io.on('connection', (socket) => {
     // handle location sharing
     socket.on('location', (coords, callback) => {
         const user = get(socket.id);
+        if (!user) {
+            return;
+        }
         io.to(user.room).emit('location', location_time(user.username, `https://google.com/maps?q=${coords.latitude},${coords.longitude}`));
         callback();
     }); // google maps link

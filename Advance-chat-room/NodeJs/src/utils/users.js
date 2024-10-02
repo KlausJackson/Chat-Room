@@ -4,6 +4,7 @@ const users = []
 const ban = []
 let password = 'dcm'
 
+
 // add
 const add = ({ id, ip, username, room }) => {
     username = username.trim().toLowerCase()
@@ -89,35 +90,6 @@ const getpass = () => {
 };
 
 
-// // TESTING
-// add({
-//     id: 34,
-//     ip: '123.456.789.0',
-//     username: 'garg',
-//     room: 'tumh'
-// })
-// add({
-//     id: 65,
-//     ip: '124.432.789.0',
-//     username: 'gsr',
-//     room: 'h'
-// })
-// add({
-//     id: 32,
-//     ip: '123.456.653.0',
-//     username: 'yjf',
-//     room: 'aer'
-// })
-
-// console.log(users)
-// remove(32)
-// console.log(users)
-// console.log(get(65))
-// console.log(getUsersInRoom('yjf'))
-// banUser('123.456.789.0')
-// console.log(getBanned())
-// unbanUser('123.456.789.0')
-// console.log(getBanned())
 
 module.exports = {
     add,
