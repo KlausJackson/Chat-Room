@@ -7,6 +7,77 @@
     font-family: Arial, sans-serif;
 }
 
+.sidebar {
+    width: fit-content;
+    display: flex;
+    flex-direction: column;
+    transition: width 0.3s;
+}
+
+.sidebar button {
+    margin: 5px 12px;
+    padding: 5px;
+    cursor: pointer;
+    transition: background 0.3s;
+}
+
+ul button {
+    align-items: right;
+}
+
+.sidebar button:hover {
+    background: #001d72;
+}
+
+.sidebar input[type="password"] {
+    width: 100%;
+    padding: 5px;
+    margin: 5px 0;
+}
+
+.sidebar button[type="submit"] {
+    background: #28a745;
+}
+.sidebar button[type="submit"]:hover {
+    background: #218838;
+}
+
+#close-server {
+    background: #dc3545; /* Red color for close button */
+}
+#close-server:hover {
+    background: #851822; /* Darker red on hover */
+}
+
+.main {
+    flex-grow: 1;
+    overflow-y: auto; /* Allows scrolling for main content */
+}
+
+#sidebar.collapsed {
+    width: 60px; 
+}
+
+#sidebar.collapsed .room-title,
+#sidebar.collapsed button,
+#sidebar.collapsed .section,
+#sidebar.collapsed .users,
+#sidebar.collapsed .banned {
+    display: none; /* Hide all items */
+}
+
+#sidebar.collapsed #toggle-btn {
+    display: block; /* Ensure the toggle button is still visible */
+}
+
+
+#toggle-btn {
+    cursor: pointer;
+    margin-bottom: max-content;
+}
+
+
+
 .chat {
     background-color: #0e0024;
 }
@@ -49,20 +120,21 @@ label {
     color: #777;
 }
 
-
 button {
     cursor: pointer;
     padding: 10px;
-    background: #3f217f;
-    border: none;
+    background: rgb(15, 90, 171);
     color: white;
-    font-size: 16px;
+    font-size: 12px;
+    border: none;
+    gap: 10px;
+    margin: 5px 0;
     transition: background .3s ease;
     border-radius: 10px;
 }
 
 button:hover {
-    background: #1e005d;
+    background: #30068c;
 }
 button:disabled {
     cursor: default;
@@ -222,24 +294,47 @@ button:disabled {
 
 
 /* Chat Sidebar */
+li {
+    font-size: 12px;
+}
+
 .room-title {
     font-weight: 400;
-    font-size: 22px;
-    background: #2c2f3a;
-    padding: 24px;   
+    font-size: 16px;
+    background: #27154b;
+    padding: 0px;
+    color: aliceblue; 
+    text-align: center;  
 }
 
 .list-title {
-    font-weight: 500;
-    font-size: 18px;
+    font-size: 12px;
     margin-bottom: 4px;
-    padding: 12px 24px 0 24px;
+    padding: 6px 0px 0 6px;
 }
 
 .users {
     list-style-type: none;
     font-weight: 300;
-    padding: 12px 24px 0 24px;
+    padding: 0px 0px 0 24px;
 }
 
+input[type="file"] {
+    display: none;
+}
+
+#file {
+    cursor: pointer;
+    padding: 10px;
+    border: 1px solid transparent;
+    border-radius: 10px;
+    color: white;
+    overflow: hidden;
+}
+
+.users li, .banned li {
+    display: flex; 
+    justify-content: space-between; 
+    align-items: center; 
+}
 

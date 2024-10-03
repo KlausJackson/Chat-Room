@@ -13,20 +13,12 @@
         the device's width and ensures proper scaling on different screen sizes. -->
     <meta name="description" content="Join our chat room to connect and communicate with others.">
     <meta name="keywords" content="chat, communication, forum, discussion">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
 </head>
 
 <body class="chat">
     <div class="all">
         <div id="sidebar" class="sidebar">
-
-
-
-
-
-
-
-
-
         </div>
 
         <div class="main">
@@ -34,12 +26,13 @@
             <div class="compose">
                 <form id="message-form">
                     <input class="sendtext" name="message" type="text" placeholder="Message..." autocomplete="off">
-                    <button class="sendButton" type="submit" id="send">Send</button>
+                    <button class="sendButton" type="submit" id="send"><i class="fas fa-paper-plane"></i></button>
                 </form>
                 <div class="buttons">
-                    <button id="send-location">Share Location</button>
-                    <input type="file" id="file-input" placeholder="File">
-                    <button id="send-file">Send File</button>
+                    <button id="send-location"><i class="fas fa-map-marker-alt"></i></button>
+                    <label id="file" for="file-input" title="Send File"><i class="fas fa-paperclip"></i></label>
+                    <input type="file" id="file-input">
+                    <button id="send-file"><i class="fas fa-upload"></i></button>
                 </div>
             </div>
         </div>
@@ -47,9 +40,6 @@
 
 
     <!-- SCRIPTS -->
-
-
-
     <!-- MESSAGES -->
     <script id="message-template" type="text/html">
         <div class="message">
@@ -101,15 +91,64 @@
 
     <!-- SIDEBAR -->
     <script id="sidebar-template" type="text/html">
-        <!-- <div class="sidebar"> -->
-        <!-- </div> -->    
-        <h2 class="room-title">Room: {{room}}</h2>
-        <h3 class="list-title">Users</h3>
-        <ul class="users">
-            {{#users}}
-                <li>{{username}}</li>
-            {{/users}}
-        </ul>
+        <button id="toggle-btn" onclick="toggleSidebar()">☰</button>
+        <label class="room-title">Room: {{room}}</label>
+        <button onclick="showSection('users')">Users</button>
+        <button onclick="showSection('banned')">Banned</button>
+        <button onclick="showSection('change-pw')">Change Password</button>
+        <button onclick="goBack()">Back</button>
+        <hr>
+        <div id="users" class="section">
+            <p class="list-title">Users</p>
+            <ul class="users">
+                {{#users}}
+                    <li>{{username}}<button class="ban" data-username="{{username}}"><i class="fas fa-ban"></i></button></li>
+                {{/users}}
+            </ul>
+        </div>
+        <hr>
+        <div id="banned" class="section">
+            <p class="list-title">Banned IP</p>
+            <ul class="banned">
+                {{#banned}}
+                    <li>{{ip}}<button class="unban" data-ip="{{ip}}"><i class="fas fa-user-check"></i></button></li>
+                {{/banned}}
+            </ul>
+        </div>
+        <hr>
+        <div id="change-pw" class="section">
+            <p class="list-title">Change Password</p>
+            <form id="change-pw-form">
+                <label for="new-pw">New Password:</label>
+                <input type="password" id="new-password" name="new-password">
+                <button id="change-pwButton" type="submit">Change Password</button>
+            </form>
+        </div>
+        <hr>
+        <button id="close">Close Server</button>
+    </script>
+    
+    
+    <script>
+        function toggleSidebar() {
+            const sidebar = document.getElementById('sidebar');
+            sidebar.classList.toggle('collapsed');
+        } // toggle the sidebar
+
+        function showSection(sectionId) {
+            const sections = document.querySelectorAll('.section');
+            sections.forEach(section => {
+                section.style.display = 'none';
+            }); 
+            document.getElementById(sectionId).style.display = 'block'; 
+        } // show the selected section
+
+        function goBack() {
+            const sections = document.querySelectorAll('.section');
+            sections.forEach(section => {
+                section.style.display = 'none';
+            }); // go back to the main view
+        }
     </script>    
 
 

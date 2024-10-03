@@ -1,27 +1,32 @@
 const socket = io() 
 
-// control elements
+// control elements inside compose message form
 // $ : convention to indicate that this is a DOM element.
 // DOM elements : elements that are accessible in the browser.
+
+// message form
 const $msgForm = document.querySelector('#message-form'); 
 const $msgFormInput = $msgForm.querySelector('input');
 const $msgFormButton = $msgForm.querySelector('button');
+
+
+// messages, files and location sharing
 const $location = document.querySelector('#send-location');
 const $fileButton = document.querySelector('#send-file');
 const $fileInput = document.querySelector('#file-input');
 const $messages = document.querySelector('#messages');
 
 
-// templates (innerHTML : the content of the element.)
+// templates (innerHTML : the content of the element.) for rendering messages, locations and files
 const msgTemplate = document.querySelector('#message-template').innerHTML; 
 const locTemplate = document.querySelector('#location-template').innerHTML;
 const fileTemplate = document.querySelector('#file-template').innerHTML;
-const sidebarTemplate = document.querySelector('#sidebar-template').innerHTML;
+const sidebarTemplate = document.getElementById('sidebar-template').innerHTML;
 
+
+// PARSE THE QUERY STRING
 const { username, room, password } = Qs.parse(location.search, { ignoreQueryPrefix: true }); // parse the query string
 // ignoreQueryPrefix : ignore the question mark in the query string.
-// const chatUrl = `/chat.html?username=${username}&room=${room}`;
-// window.location.href = chatUrl
 
 // Parse the current URL to get username and room
 const currentUrl = new URL(window.location.href);
@@ -108,13 +113,53 @@ socket.on('banned', () => {
 });
 
 
-// user list
-socket.on('room', ({ room, users }) => {
+
+// SIDEBAR : room info and actions
+function setupEventListeners() {
+    const $banButtons = document.querySelectorAll('.ban');
+    const $unbanButtons = document.querySelectorAll('.unban');
+    const $changepass = document.querySelector('#change-pw-form');
+
+    $banButtons.forEach($banButton => {
+        $banButton.addEventListener('click', () => {
+            if (!confirm('Are you sure you want to ban this user?')) { return; }
+            const username = $banButton.getAttribute('data-username'); 
+            console.log(username);
+            socket.emit('ban', username, (error) => {
+                if (error) { alert(error); }
+            });
+        });
+    });
+
+    $unbanButtons.forEach($unbanButton => {
+        $unbanButton.addEventListener('click', () => {
+            if (!confirm('Are you sure you want to unban this user?')) { return; }
+            const ip = $unbanButton.getAttribute('data-ip');
+            console.log(ip);
+            socket.emit('unban', ip, (error) => {
+                if (error) { alert(error); }
+            });
+        });
+    });
+
+    $changepass.addEventListener('submit', (e) => {
+        e.preventDefault();
+        if ($changepass.querySelector('input').value === '') { return; }
+        const new_password = e.target.elements['new-password'].value;
+        socket.emit('changepass', new_password, (error) => {
+            if (error) { alert(error); } else { alert('Password changed.'); }
+        });
+    });
+};
+
+socket.on('room', ({ room, users, banned }) => {
     const html = Mustache.render(sidebarTemplate, {
         room,
-        users
+        users,
+        banned
     });
     document.querySelector('#sidebar').innerHTML = html;
+    setupEventListeners(); // must be after the sidebar is rendered 
 });
 
 
@@ -123,20 +168,13 @@ socket.on('room', ({ room, users }) => {
 // send message
 $msgForm.addEventListener('submit', (e) => {
     e.preventDefault(); // prevent the page from refreshing
-    if ($msgFormInput.value === '') {
-        return;
-    }
-
+    if ($msgFormInput.value === '') { return; }
     $msgFormButton.setAttribute('disabled', 'disabled'); // disable button after sending message
     const message = e.target.elements.message.value;
     
     socket.emit('message', message, (e) => {
         $msgFormButton.removeAttribute('disabled'); // enable button after sending message
-        if (e) {
-            alert(e);
-        } else {
-            $msgFormInput.value = ''; // clear the input field if no error
-        }
+        if (e) { alert(e); } else { $msgFormInput.value = ''; } // clear the input field if no error
     }); // emit to the server 
 });
 
@@ -152,8 +190,7 @@ $location.addEventListener('click', () => {
         socket.emit('location', {
             latitude: position.coords.latitude,
             longitude: position.coords.longitude
-        }, () => {
-            countdown(5);
+        }, () => { countdown(5); 
         });
     });
 });
@@ -175,15 +212,15 @@ $fileButton.addEventListener('click', () => {
                 data, 
                 isImage,
                 isVideo 
+            }, (e) => {
+                if (e) { alert(e); }
             }); // Send file data to the server
         };
         reader.readAsDataURL(file); // read the file as a data URL
         $fileInput.value = ''; // clear the input
         console.log('file sent to server');
         console.log(file.name, isImage, isVideo);
-    } else {
-        alert('Please select a file.');
-    }
+    } else { alert('Please select a file.'); }
 });
 
 
