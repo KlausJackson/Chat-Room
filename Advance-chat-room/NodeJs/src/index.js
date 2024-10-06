@@ -61,30 +61,38 @@ function update_info(user) {
 //----------------------------------------------------------------------------------------
 // EVENTS HANDLING
 io.on('connection', (socket) => {
-    console.log('New WebSocket connection');
     let admin = false;
 
     // handle joining
     socket.on('join', ({ username, room, password }, callback) => {
-        // check if the user is banned
-        const ip = socket.handshake.address; // get ip address of the client
-        let bannedIPs = getBanned();
-        if (bannedIPs.indexOf(ip) !== -1) { return callback('You are banned.'); }
-
+        console.log('------------------------------------------------------------');
+        
+        // get the real IP address if the client is behind a proxy
+        const ip = socket.handshake.headers['x-forwarded-for'] || socket.handshake.address || socket.request.connection.remoteAddress;
+        // socket.request.connection.remoteAddress : get the IP address of the last proxy server, if none then the client's IP.
+        // socket.handshake.headers['x-forwarded-for'] : get multiple IP addresses if the client is behind multiple proxies. The first one is usually the client's IP.
+        const time = new Date().toLocaleString()
+        console.log(`${time} - ${socket.id} - ${username} - ${ip} - ${room} - ${password} - wants to log in.`);
+        
         // check if the user is an admin and if the password is correct
         if (username === 'admin' && getpass() === password) { admin = true; } 
         else if (username === 'admin') {
+            console.log(`${time} - ${socket.id} - ${username} - ${ip} - ${room} - ${password} - failed to log in as admin.`);
             return callback('Incorrect password or login session ended or you\'re not an admin.');
         } 
 
         // add user to the users array, socket.id : unique id for the connection
         const { error, user } = add({ id: socket.id, ip, username, room, isAdmin: admin });
-        if (error) { return callback(error); }
+        if (error) { 
+            console.log(`${time} - ${socket.id} - ${username} - ${ip} - ${room} - ${password} - failed to log in - ${error}.`);
+            return callback(error);
+        } // return error to the client
 
         // user.room and user.username: values after trimming and lowercasing
         socket.join(user.room);
         socket.emit('message', msg(`Welcome to room ${user.room}!`)); // emit to the client
         socket.broadcast.to(user.room).emit('message', msg(`${user.username} has joined!`)); // emit to all clients except the current one
+        console.log(`${time} - ${socket.id} - ${username} - ${ip} - ${room} - ${password} - successfully joined.`);
         update_info(user);
         callback() 
     });
@@ -95,7 +103,10 @@ io.on('connection', (socket) => {
         const user = get(socket.id);
         if (!user) { return; }
         const filter = new Filter();
-        if (filter.isProfane(message)) { return callback('No profanity.'); }
+        if (filter.isProfane(message)) { 
+            console.log(`${new Date().toLocaleString()} - ${user.ip} - ${user.username} - ${message} - profanity detected.`);
+            return callback('No profanity.'); 
+        }
         io.to(user.room).emit('message', msg(user.username, message)); // emit to all clients
         callback();
     });
@@ -122,25 +133,35 @@ io.on('connection', (socket) => {
 
 
     socket.on('ban', (username, callback) => {
+        const time = new Date().toLocaleString();
         const ad = get(socket.id);
-        if (!ad.isAdmin) { return callback('You are not an admin.'); }
+        if (!admin) { 
+            console.log(`${time} - ${socket.id} - ${username} - ${ad.ip} - ${ad.room} - tried to ban ${username} - not an admin.`);
+            return callback('You are not an admin.'); 
+        }
         const user = getIP(username); 
         if (!user) { return callback('User not found.'); }
         const { message, error } = banUser(user);
         if (error) { return callback(error); }
         else {
             update_info(ad);
+            console.log(`${time} - ${socket.id} - ${username} - ${ad.ip} - ${ad.room} - banned ${username}.`);
             callback(message);
         }
     });
 
     socket.on('unban', (ip, callback) => {
+        const time = new Date().toLocaleString();
         const ad = get(socket.id);
-        if (!ad.isAdmin) { return callback('You are not an admin.'); }
+        if (!admin) { 
+            console.log(`${time} - ${socket.id} - ${ad.username} - ${ad.ip} - ${ad.room} - tried to unban ${ip} - not an admin.`);
+            return callback('You are not an admin.'); 
+        }
         const { message, error } = unbanUser(ip);
         if (error) { return callback(error); }
         else {
             update_info(ad);
+            console.log(`${time} - ${socket.id} - ${ad.username} - ${ad.ip} - ${ad.room} - unbanned ${ip}.`);
             callback(message);
         }
     });
@@ -149,6 +170,7 @@ io.on('connection', (socket) => {
         if (!admin) { return callback('You are not an admin.'); }
         if (password.trim() === '') { return callback('Password cannot be empty.'); }
         changepass(password);
+        console.log(`${new Date().toLocaleString()} - ${socket.id} - ${get(socket.id).username} - ${get(socket.id).ip} - ${get(socket.id).room} - changed the password.`);
     });
 
     // handle disconnection
@@ -156,6 +178,7 @@ io.on('connection', (socket) => {
         const user = remove(socket.id);
         if (user) {
             io.to(user.room).emit('message', msg(`${user.username} has left.`));
+            console.log(`${new Date().toLocaleString()} - ${socket.id} - ${user.username} - ${user.ip} - ${user.room} - disconnected.`);
             update_info(user);          
         } // in case the user never joined the room
     });
@@ -170,6 +193,16 @@ io.on('connection', (socket) => {
     }); // google maps link
 });
 
+
+
+app.use((req, res) => {
+    res.status(404).sendFile(path.join(publicpath, '404.html'), (err) => {
+        if (err) {
+            console.error(err);
+            res.status(err.status).end();
+        }
+    });
+});
 
 
 //----------------------------------------------------------------------------------------

@@ -119,12 +119,21 @@
         <div id="change-pw" class="section">
             <p class="list-title">Change Password</p>
             <form id="change-pw-form">
-                <label for="new-pw">New Password:</label>
                 <input type="password" id="new-password" name="new-password">
                 <button id="change-pwButton" type="submit">Change Password</button>
             </form>
         </div>
         <hr>
+        <div id="search-msg" class="section">
+            <p class="list-title">Search message</p>
+            <form id="search">
+                <input type="text" id="search-field" name="search-input" placeholder="Search message...">
+                <!-- <button id="searchButton" type="submit">Search</button> -->
+            </form>
+        </div>
+
+        <button id="log">Save log</button>
+        <button id="chat">Save chat</button>
         <button id="close">Close Server</button>
     </script>
     
@@ -138,7 +147,7 @@
         function showSection(sectionId) {
             const sections = document.querySelectorAll('.section');
             sections.forEach(section => {
-                section.style.display = 'none';
+                if (section.id !== "search-msg") { section.style.display = 'none'; }
             }); 
             document.getElementById(sectionId).style.display = 'block'; 
         } // show the selected section
@@ -146,7 +155,7 @@
         function goBack() {
             const sections = document.querySelectorAll('.section');
             sections.forEach(section => {
-                section.style.display = 'none';
+                if (section.id !== "search-msg") { section.style.display = 'none'; }
             }); // go back to the main view
         }
     </script>    

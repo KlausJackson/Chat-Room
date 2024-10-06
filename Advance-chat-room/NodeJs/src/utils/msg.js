@@ -1,7 +1,12 @@
 // Description: 
 // This file contains functions for:
 // - creating messages, locations with timestamps 
-// - save them to a log (JSON) file
+// - save them and server log to a mongodb database.
+
+
+// chat history : messages, files, timestamp to mongodb
+// server log : log, timestamp to mongodb
+
 
 
 

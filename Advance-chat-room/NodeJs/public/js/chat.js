@@ -21,7 +21,18 @@ const $messages = document.querySelector('#messages');
 const msgTemplate = document.querySelector('#message-template').innerHTML; 
 const locTemplate = document.querySelector('#location-template').innerHTML;
 const fileTemplate = document.querySelector('#file-template').innerHTML;
-const sidebarTemplate = document.getElementById('sidebar-template').innerHTML;
+// const $sidebarTempl = document.querySelector('#sidebar-template');
+// const sidebarTemplate = $sidebarTempl.innerHTML;
+const sidebarTemplate = document.querySelector('#sidebar-template').innerHTML;
+
+
+// Render the sidebar template into a temporary element
+const sidebarContainer = document.createElement('div');
+sidebarContainer.innerHTML = sidebarTemplate;
+// save room info and close server.
+const $chat = sidebarContainer.querySelector('#chat');
+const $log = sidebarContainer.querySelector('#log');
+const $close = sidebarContainer.querySelector('#close');
 
 
 // PARSE THE QUERY STRING
@@ -145,6 +156,7 @@ function setupEventListeners() {
     $changepass.addEventListener('submit', (e) => {
         e.preventDefault();
         if ($changepass.querySelector('input').value === '') { return; }
+        if (!confirm('Are you sure you want to change the password? Make sure you have alerted other Admin about this.')) { return; }
         const new_password = e.target.elements['new-password'].value;
         socket.emit('changepass', new_password, (error) => {
             if (error) { alert(error); } else { alert('Password changed.'); }
@@ -174,7 +186,10 @@ $msgForm.addEventListener('submit', (e) => {
     
     socket.emit('message', message, (e) => {
         $msgFormButton.removeAttribute('disabled'); // enable button after sending message
-        if (e) { alert(e); } else { $msgFormInput.value = ''; } // clear the input field if no error
+        if (e) { alert(e); } else { 
+            $msgFormInput.value = '';
+            $msgFormInput.focus();
+        } // clear the input field if no error and focus on it
     }); // emit to the server 
 });
 
@@ -223,6 +238,33 @@ $fileButton.addEventListener('click', () => {
     } else { alert('Please select a file.'); }
 });
 
+
+
+// save room info and close server
+$chat.addEventListener('click', () => {
+    $chat.setAttribute('disabled', 'disabled');
+    socket.emit('chat', (error) => {
+        $chat.removeAttribute('disabled');
+        if (error) { alert(error); }
+    });
+});
+
+$close.addEventListener('click', () => {
+    if (!confirm('Are you sure you want to close the server?')) { return; }
+    $close.setAttribute('disabled', 'disabled');
+    socket.emit('close', (error) => {
+        $close.removeAttribute('disabled');
+        if (error) { alert(error); }
+    });
+});
+
+$log.addEventListener('click', () => {
+    $log.setAttribute('disabled', 'disabled');
+    socket.emit('log', (error) => {
+        $log.removeAttribute('disabled');
+        if (error) { alert(error); }
+    });
+});
 
 
 

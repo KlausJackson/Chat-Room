@@ -29,7 +29,7 @@ ul button {
     background: #001d72;
 }
 
-.sidebar input[type="password"] {
+.sidebar input[type="password"], input[type="text"] {
     width: 100%;
     padding: 5px;
     margin: 5px 0;
