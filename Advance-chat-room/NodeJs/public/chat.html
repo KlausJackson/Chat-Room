@@ -3,7 +3,7 @@
 <head>
     <title>Chat Room</title> <!-- web title -->
     <link rel="icon" type="image/jpeg" href="img/logo.jpg">
-    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="style_chat.css">
     <meta charset="UTF-8"> <!-- defines the character encoding for the document. -->
     <meta http-equiv="X-UA-Compatible" content="IE-edge">
     <!-- ensures that the page is displayed using the latest version of Internet 
@@ -47,7 +47,7 @@
                 <span class="alias">{{username}}</span>
                 <span class="stamp">{{time}}</span>
             </p>
-            <p>{{message}}</p>
+            <p id="msg">{{message}}</p>
         </div>
     </script>
 
@@ -91,12 +91,31 @@
 
     <!-- SIDEBAR -->
     <script id="sidebar-template" type="text/html">
-        <button id="toggle-btn" onclick="toggleSidebar()">☰</button>
+        <button id="toggle-btn" onclick="toggleSidebar()" class="sidebar-button"><i class="fas fa-bars"></i></button>
         <label class="room-title">Room: {{room}}</label>
-        <button onclick="showSection('users')">Users</button>
-        <button onclick="showSection('banned')">Banned</button>
-        <button onclick="showSection('change-pw')">Change Password</button>
-        <button onclick="goBack()">Back</button>
+        <!-- <button onclick="showSection('users')"><i class="fas fa-users"></i> Users</button>
+        <button onclick="showSection('banned')"><i class="fas fa-user-slash"></i> Banned</button>
+        <button onclick="showSection('change-pw')"><i class="fas fa-key"></i> Change Password</button>
+        <button onclick="goBack()"><i class="fas fa-arrow-left"></i> Back</button> -->
+
+
+        <button onclick="showSection('users')" class="sidebar-button">
+            <span class="icon"><i class="fas fa-users"></i></span>
+            <span class="text">Users</span>                
+        </button>
+        <button onclick="showSection('banned')" class="sidebar-button">
+            <span class="icon"><i class="fas fa-user-slash"></i></span>
+            <span class="text">Banned</span>
+        </button>
+        <button onclick="showSection('change-pw')" class="sidebar-button">
+            <span class="icon"><i class="fas fa-key"></i></span>
+            <span class="text">Change Password</span>
+        </button>
+        <button onclick="goBack()" class="sidebar-button">
+            <span class="icon"><i class="fas fa-arrow-left"></i></span>
+            <span class="text">Back</span>
+        </button>
+
         <hr>
         <div id="users" class="section">
             <p class="list-title">Users</p>
@@ -124,17 +143,26 @@
             </form>
         </div>
         <hr>
-        <div id="search-msg" class="section">
+        <div id="search-msg" class="section1">
             <p class="list-title">Search message</p>
-            <form id="search">
+            <form id="search-form">
                 <input type="text" id="search-field" name="search-input" placeholder="Search message...">
-                <!-- <button id="searchButton" type="submit">Search</button> -->
+                <button id="searchButton" type="submit">Search</button>
             </form>
         </div>
 
-        <button id="log">Save log</button>
-        <button id="chat">Save chat</button>
-        <button id="close">Close Server</button>
+        <button id="log" class="sidebar-button" type="button">
+            <span class="icon"><i class="fas fa-file-invoice"></i></span>
+            <span class="text">Save log</span>
+        </button>
+        <button id="chat" class="sidebar-button" type="button">
+            <span class="icon"><i class="fas fa-comments"></i></span>
+            <span class="text">Save chat</span>
+        </button>
+        <button id="close" class="sidebar-button" type="button">
+            <span class="icon"><i class="fas fa-power-off"></i></span>
+            <span class="text">Close Server</span>
+        </button>
     </script>
     
     
@@ -142,9 +170,13 @@
         function toggleSidebar() {
             const sidebar = document.getElementById('sidebar');
             sidebar.classList.toggle('collapsed');
+            goBack();
         } // toggle the sidebar
 
         function showSection(sectionId) {
+            if (sidebar.classList.contains('collapsed')) {
+                sidebar.classList.remove('collapsed');
+            } 
             const sections = document.querySelectorAll('.section');
             sections.forEach(section => {
                 if (section.id !== "search-msg") { section.style.display = 'none'; }
@@ -158,6 +190,50 @@
                 if (section.id !== "search-msg") { section.style.display = 'none'; }
             }); // go back to the main view
         }
+
+        function adjustMessageWidth() {
+            const sidebar = document.getElementById('sidebar');
+            const messages = document.getElementById('messages');
+            const sidebarWidth = sidebar.offsetWidth;
+            const availableWidth = messages.clientWidth - sidebarWidth; // Calculate available width for messages
+
+            const messageElements = messages.querySelectorAll('#msg');
+            messageElements.forEach(msg => {
+                msg.style.maxWidth = `${availableWidth}px`; // Set max width based on available space
+            });
+        }
+
+        function adjustImageSize() {
+            const sidebar = document.getElementById('sidebar');
+            const main = document.querySelector('.main');
+            const messages = document.getElementById('messages');
+            const sidebarWidth = sidebar.offsetWidth;
+            const mainWidth = main.offsetWidth;
+            const availableWidth = mainWidth - sidebarWidth;
+            const images = messages.querySelectorAll('img');
+            images.forEach(img => { img.style.maxWidth = `${availableWidth}px`; });
+        }
+
+        function autoscroll() {
+            const messages = document.getElementById('messages');
+            messages.scrollTop = messages.scrollHeight;
+        }
+
+        window.addEventListener('load', () => {
+            adjustMessageWidth();
+            adjustImageSize();
+        });
+        window.addEventListener('resize', () => {
+            adjustMessageWidth();
+            adjustImageSize();
+        });
+
+        const observer = new MutationObserver(() => {
+            adjustImageSize();
+            autoscroll();
+            adjustMessageWidth();
+        });
+        observer.observe(document.getElementById('messages'), { childList: true, subtree: true });
     </script>    
 
 
@@ -166,6 +242,6 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.1/moment.min.js"></script> <!-- for date and time manipulation -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/qs/6.10.1/qs.min.js"></script> <!-- for parsing query strings -->
     <script src="/socket.io/socket.io.js"></script> 
-    <script src="/js/chat.js"></script>
+    <script src="/js/chat.js"></script> <!-- ensure that the chat.js file is loaded last -->
 </body>
 </html>

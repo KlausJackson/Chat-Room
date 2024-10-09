@@ -1,0 +1,261 @@
+/* General Styles */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    color: #ffffff;
+    font-family: Arial, sans-serif;
+    font-size: 14px;
+}
+
+/* Responsive Styles */
+@media (max-width: 768px) {
+    .sidebar {
+        width: 100%; /* Full width on mobile */
+        order: 2; /* Move sidebar to the right */
+    }
+
+    .compose input {
+        margin-right: 0;
+        margin-bottom: 10px;
+    }
+}
+
+
+.all, .buttons, .sidebar, .main, button {
+    display: flex;
+}
+
+input {
+    border: 1px solid #1e005d;
+    padding: 7px;
+    margin: 0px 0;
+    border-radius: 10px;
+    width: 100%;
+}
+input[type="file"] {
+    display: none;
+}
+body {
+    line-height: 1.4;
+    color: #3c3c3c;
+}
+
+h1 {
+    margin-bottom: 10px;
+}
+
+label {
+    display: block;
+    font-size: 14px;
+    margin-bottom: 8px;
+    color: #777;
+}
+
+button {
+    cursor: pointer;
+    padding: 10px;
+    background: rgb(15, 90, 171);
+    border: none;
+    gap: 20px;
+    margin: 0px 0px; /* fix for file, send, location buttons */
+    transition: background .3s ease;
+    border-radius: 10px;
+}
+
+button:hover {
+    background: #191b22;
+}
+button:disabled {
+    cursor: default;
+    background: #1e005d;
+}
+
+.main {
+    flex-grow: 1;
+    flex-direction: column;
+    max-height: 100vh;
+    overflow-y: auto;
+}
+
+
+
+/* SIDEBAR */
+.sidebar {
+    width: fit-content;
+    flex-direction: column;
+    transition: width 0.3s ease;
+    overflow-y: hidden;
+    height: 100vh;
+    width: 200px;
+    background: #333744;
+}
+.sidebar-button {
+    background: none; /* No background for buttons */
+}
+
+.section button, .section1 button {
+    padding: 5px;
+    margin: 5px;
+}
+.section {
+    display: none;
+}
+
+.icon {
+    align-items: left;
+}
+.text {
+    align-items: right;
+}
+
+.room-title {
+    font-weight: 800;
+    font-size: 16px;
+    background: #3e3e3e;
+    padding: 0px;
+    text-align: center;  
+    border-radius: 50px;
+}
+
+.list-title {
+    margin-bottom: 4px;
+    padding: 6px 0px 0 6px;
+}
+
+.users {
+    list-style-type: none;
+    padding: 0px 0px 0 24px;
+}
+.users li, .banned li {
+    display: flex; 
+    justify-content: space-between; 
+    align-items: center; 
+}
+/* #close-server {
+    background: #dc3545;
+}
+#close-server:hover {
+    background: #851822;
+} */
+
+
+/* SIDEBAR COLLAPSED */
+#sidebar.collapsed {
+    width: 35px; 
+}
+
+#sidebar.collapsed .room-title,
+#sidebar.collapsed .section,
+#sidebar.collapsed .section1,
+#sidebar.collapsed .users,
+#sidebar.collapsed .banned {
+    display: none;
+}
+
+#sidebar.collapsed #toggle-btn {
+    display: block;
+}
+
+#toggle-btn {
+    cursor: pointer;
+    margin-bottom: max-content;
+}
+
+
+
+
+
+
+/* CHAT */
+.chat {
+    background-color: #1e1829;
+}
+
+.all-messages {
+    flex: 1;
+    padding: 10px 0px 0px 10px;
+    overflow-y: scroll;
+}
+
+.sendfile {
+    display: right;
+    justify-content: space-between;
+    width: fit-content;
+    height: fit-content;
+}
+
+.sendtext {
+    display: right;
+    justify-content: space-between;
+    width: fit-content;
+}
+
+
+/* Message */
+
+
+.message #msg {
+    margin-bottom: 10px;  
+    padding: 7px;
+    border-radius: 7px;
+    background-color: #00357e;
+    width: fit-content;
+}
+.message #msg:empty {
+    background-color: transparent; /* No background */
+    border: none; /* No border */
+    padding: 0; /* No padding */
+    margin: 0; /* No margin */
+}
+
+.message {
+    margin-bottom: 15px;
+}
+
+.alias {
+    font-weight: 600;
+    margin-right: 8px;
+}
+
+.stamp {
+    color: #777;
+}
+
+.message a {
+    color: #0070CC;
+}
+
+
+/* Message Composition */
+.compose {
+    display: flex;
+    flex-shrink: 0;
+}
+
+.compose form {
+    display: flex;
+    flex-grow: 1;
+}
+
+.compose input {
+    border: 1px solid #eeeeee;
+    flex-grow: 1;
+}
+
+.compose button {
+    height: fit-content;
+    width: fit-content;
+}
+
+#file {
+    cursor: pointer;
+    padding: 10px;
+    border: 1px solid transparent;
+    border-radius: 10px;
+    color: white;
+    overflow: hidden;
+}
+
+
+

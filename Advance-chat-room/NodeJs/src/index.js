@@ -4,7 +4,7 @@ const http = require('http');
 const express = require('express'); // npm i express
 const socketio = require('socket.io'); // npm i socket.io
 const Filter = require('bad-words'); // npm i bad-words
-const { msg, location_time } = require('./utils/msg'); // import msg functions from msg.js
+const { msg, location_time, log } = require('./utils/msg'); // import msg functions from msg.js
 
 // import users management functions from file.js
 const { add,
@@ -34,11 +34,26 @@ const publicpath = path.join(__dirname, '../public');
 app.use(express.static(publicpath));
 
 
-function update_info(user) {
+function format() {
+    const now = new Date();
+    const year = now.getFullYear();
+    const month = String(now.getMonth() + 1).padStart(2, '0'); // Months are 0-based
+    const day = String(now.getDate()).padStart(2, '0');
+    // const hours = String(now.getHours()).padStart(2, '0');
+    // const minutes = String(now.getMinutes()).padStart(2, '0');
+    // const seconds = String(now.getSeconds()).padStart(2, '0');
+
+    return `${year}-${month}-${day}`;
+}
+const filename = `log_${format()}.txt`;
+
+ 
+async function update_info(user) {
     const usersInRoom = getUsersInRoom(user.room);
     const nonAdmins = usersInRoom.filter(u => !u.isAdmin);
     const ads = usersInRoom.filter(u => u.isAdmin);
-    
+    const banned_ips = await getBanned();
+
     nonAdmins.forEach(nonAdmin => {
         io.to(nonAdmin.id).emit('room', {
             room: user.room,
@@ -51,7 +66,7 @@ function update_info(user) {
         io.to(ad.id).emit('room', {
             room: user.room,
             users: usersInRoom,
-            banned: getBanned().map(ip => ({ ip }))
+            banned: banned_ips.map(ip => ({ ip }))
         }); 
     }); // Emit to each admin user individually
 }
@@ -64,47 +79,46 @@ io.on('connection', (socket) => {
     let admin = false;
 
     // handle joining
-    socket.on('join', ({ username, room, password }, callback) => {
-        console.log('------------------------------------------------------------');
+    socket.on('join', async ({ username, room, password }, callback) => {
+        await log(filename, '------------------------------------------------------------');
         
         // get the real IP address if the client is behind a proxy
         const ip = socket.handshake.headers['x-forwarded-for'] || socket.handshake.address || socket.request.connection.remoteAddress;
         // socket.request.connection.remoteAddress : get the IP address of the last proxy server, if none then the client's IP.
         // socket.handshake.headers['x-forwarded-for'] : get multiple IP addresses if the client is behind multiple proxies. The first one is usually the client's IP.
-        const time = new Date().toLocaleString()
-        console.log(`${time} - ${socket.id} - ${username} - ${ip} - ${room} - ${password} - wants to log in.`);
         
+        const time = new Date().toLocaleString()
         // check if the user is an admin and if the password is correct
         if (username === 'admin' && getpass() === password) { admin = true; } 
         else if (username === 'admin') {
-            console.log(`${time} - ${socket.id} - ${username} - ${ip} - ${room} - ${password} - failed to log in as admin.`);
+            await log(filename, `${time} - ${socket.id} - ${username} - ${ip} - ${room} - ${password} - failed to log in as admin.`);
             return callback('Incorrect password or login session ended or you\'re not an admin.');
         } 
 
         // add user to the users array, socket.id : unique id for the connection
-        const { error, user } = add({ id: socket.id, ip, username, room, isAdmin: admin });
+        const { error, user } = await add({ id: socket.id, ip, username, room, isAdmin: admin });
         if (error) { 
-            console.log(`${time} - ${socket.id} - ${username} - ${ip} - ${room} - ${password} - failed to log in - ${error}.`);
+            await log(filename, `${time} - ${socket.id} - ${username} - ${ip} - ${room} - ${password} - failed to log in - ${error}.`);
             return callback(error);
-        } // return error to the client
+        }
 
         // user.room and user.username: values after trimming and lowercasing
         socket.join(user.room);
         socket.emit('message', msg(`Welcome to room ${user.room}!`)); // emit to the client
-        socket.broadcast.to(user.room).emit('message', msg(`${user.username} has joined!`)); // emit to all clients except the current one
-        console.log(`${time} - ${socket.id} - ${username} - ${ip} - ${room} - ${password} - successfully joined.`);
+        io.to(user.room).emit('message', msg(`${user.username} has joined!`)); // emit to all clients
+        await log(filename, `${time} - ${socket.id} - ${username} - ${ip} - ${room} - ${password} - successfully joined.`);
         update_info(user);
         callback() 
     });
 
 
     // handle messages
-    socket.on('message', (message, callback) => {
+    socket.on('message', async (message, callback) => {
         const user = get(socket.id);
         if (!user) { return; }
         const filter = new Filter();
         if (filter.isProfane(message)) { 
-            console.log(`${new Date().toLocaleString()} - ${user.ip} - ${user.username} - ${message} - profanity detected.`);
+            await log(filename, `${new Date().toLocaleString()} - ${user.ip} - ${user.username} - ${message} - profanity detected.`);
             return callback('No profanity.'); 
         }
         io.to(user.room).emit('message', msg(user.username, message)); // emit to all clients
@@ -132,53 +146,75 @@ io.on('connection', (socket) => {
     });
 
 
-    socket.on('ban', (username, callback) => {
+    socket.on('ban', async (username, callback) => {
         const time = new Date().toLocaleString();
         const ad = get(socket.id);
         if (!admin) { 
-            console.log(`${time} - ${socket.id} - ${username} - ${ad.ip} - ${ad.room} - tried to ban ${username} - not an admin.`);
+            await log(filename, `${time} - ${socket.id} - ${username} - ${ad.ip} - ${ad.room} - tried to ban ${username} - not an admin.`);
             return callback('You are not an admin.'); 
         }
-        const user = getIP(username); 
+        const user_ip = getIP(username); 
         if (!user) { return callback('User not found.'); }
-        const { message, error } = banUser(user);
+        const { message, error } = await banUser(user_ip);
         if (error) { return callback(error); }
         else {
             update_info(ad);
-            console.log(`${time} - ${socket.id} - ${username} - ${ad.ip} - ${ad.room} - banned ${username}.`);
+            await log(filename, `${time} - ${socket.id} - ${username} - ${ad.ip} - ${ad.room} - banned ${username}.`);
             callback(message);
         }
     });
 
-    socket.on('unban', (ip, callback) => {
+    socket.on('unban', async (ip, callback) => {
         const time = new Date().toLocaleString();
         const ad = get(socket.id);
         if (!admin) { 
-            console.log(`${time} - ${socket.id} - ${ad.username} - ${ad.ip} - ${ad.room} - tried to unban ${ip} - not an admin.`);
+            await log(filename, `${time} - ${socket.id} - ${ad.username} - ${ad.ip} - ${ad.room} - tried to unban ${ip} - not an admin.`);
             return callback('You are not an admin.'); 
         }
-        const { message, error } = unbanUser(ip);
+        const { message, error } = await unbanUser(ip);
         if (error) { return callback(error); }
         else {
             update_info(ad);
-            console.log(`${time} - ${socket.id} - ${ad.username} - ${ad.ip} - ${ad.room} - unbanned ${ip}.`);
+            await log(filename, `${time} - ${socket.id} - ${ad.username} - ${ad.ip} - ${ad.room} - unbanned ${ip}.`);
             callback(message);
         }
     });
 
-    socket.on('changepass', (password, callback) => {
+    socket.on('changepass', async (password, callback) => {
         if (!admin) { return callback('You are not an admin.'); }
         if (password.trim() === '') { return callback('Password cannot be empty.'); }
-        changepass(password);
-        console.log(`${new Date().toLocaleString()} - ${socket.id} - ${get(socket.id).username} - ${get(socket.id).ip} - ${get(socket.id).room} - changed the password.`);
+        try {
+            await changepass(password);
+            await log(filename, `${new Date().toLocaleString()} - ${socket.id} - ${get(socket.id).username} - ${get(socket.id).ip} - ${get(socket.id).room} - changed the password.`);
+            callback();    
+        } catch (e) {
+            callback('Error changing password:', e.message);
+        }
     });
 
+    socket.on('search', (text, callback) => {
+        if (text.trim() === '') { return callback('Search text cannot be empty.'); }
+        console.log(text);
+        callback();
+    });
+
+
+    socket.on('close', async (callback) => {
+        if (!admin) { return callback('You are not an admin.'); }
+        server.close(async (e) => {
+            if (e) { return callback('Error closing the server:', e.message); }
+            await log(filename, 'Server closed at ' + new Date().toLocaleString() + 'by ' + getIP(get(socket.id).username) + '.');
+            callback();
+        });
+    });
+
+
     // handle disconnection
-    socket.on('disconnect', () => {
+    socket.on('disconnect', async () => {
         const user = remove(socket.id);
         if (user) {
             io.to(user.room).emit('message', msg(`${user.username} has left.`));
-            console.log(`${new Date().toLocaleString()} - ${socket.id} - ${user.username} - ${user.ip} - ${user.room} - disconnected.`);
+            await log(filename, `${new Date().toLocaleString()} - ${socket.id} - ${user.username} - ${user.ip} - ${user.room} - disconnected.`);
             update_info(user);          
         } // in case the user never joined the room
     });
@@ -206,4 +242,11 @@ app.use((req, res) => {
 
 
 //----------------------------------------------------------------------------------------
-server.listen(port, () => { console.log(`Server is up on port ${port}.`) }); 
+server.listen(port, async () => { 
+    await log(filename, '                                                            ')
+    await log(filename, '                                                            ')
+    await log(filename, '                                                            ')
+    await log(filename, '------------------------------------------------------------');
+    await log(filename, '------------------------------------------------------------');
+    await log(filename, `Server is up on port ${port} at ${new Date().toLocaleString()}.`); 
+}); 

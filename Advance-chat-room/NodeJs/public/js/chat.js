@@ -26,14 +26,6 @@ const fileTemplate = document.querySelector('#file-template').innerHTML;
 const sidebarTemplate = document.querySelector('#sidebar-template').innerHTML;
 
 
-// Render the sidebar template into a temporary element
-const sidebarContainer = document.createElement('div');
-sidebarContainer.innerHTML = sidebarTemplate;
-// save room info and close server.
-const $chat = sidebarContainer.querySelector('#chat');
-const $log = sidebarContainer.querySelector('#log');
-const $close = sidebarContainer.querySelector('#close');
-
 
 // PARSE THE QUERY STRING
 const { username, room, password } = Qs.parse(location.search, { ignoreQueryPrefix: true }); // parse the query string
@@ -55,26 +47,6 @@ if (p) {
 
 
 
-// UX
-const autoscroll = () => {
-    const $newmsg = $messages.lastElementChild; // get the latest message
-    
-    const newmsg_styles = getComputedStyle($newmsg); 
-    const newmsg_margin = parseInt(newmsg_styles.marginBottom);
-    const newmsg_height = $newmsg.offsetHeight + newmsg_margin;
-    
-    const visible_height = $messages.offsetHeight; // get the height of the visible messages
-    const container_height = $messages.scrollHeight; // get the height of messages container
-    const scroll_offset = $messages.scrollTop + visible_height; 
-    // scroll offset : the distance from the top of the container to the bottom of the visible messages
-
-    if (container_height - newmsg_height <= scroll_offset) { // if the user is at the bottom
-        $messages.scrollTop = $messages.scrollHeight; // scroll to the bottom
-    }
-};
-
-
-
 // LISTEN FOR EVENTS FROM SERVER
 // messages
 socket.on('message', (message) => {
@@ -84,7 +56,6 @@ socket.on('message', (message) => {
         time: message.time
     }); // render the template with the message
     $messages.insertAdjacentHTML('beforeend', html); // insert the message into the div
-    autoscroll();
 });
 
 
@@ -96,7 +67,6 @@ socket.on('location', (location) => {
         time: location.time
     });
     $messages.insertAdjacentHTML('beforeend', html);
-    autoscroll();
 });
 
 
@@ -113,7 +83,6 @@ socket.on('file', ({ alias, name, data, time, isImage, isVideo }) => {
     console.log('file received from server');
     console.log(alias, name, isImage, isVideo);
     $messages.insertAdjacentHTML('beforeend', html);
-    autoscroll();
 });
 
 
@@ -130,6 +99,7 @@ function setupEventListeners() {
     const $banButtons = document.querySelectorAll('.ban');
     const $unbanButtons = document.querySelectorAll('.unban');
     const $changepass = document.querySelector('#change-pw-form');
+    const $search = document.querySelector('#search-form');
 
     $banButtons.forEach($banButton => {
         $banButton.addEventListener('click', () => {
@@ -162,7 +132,56 @@ function setupEventListeners() {
             if (error) { alert(error); } else { alert('Password changed.'); }
         });
     });
+
+    $search.addEventListener('submit', (e) => {
+        e.preventDefault();
+        if ($search.querySelector('input').value === '') { return; }
+        const text = e.target.elements['search-input'].value;
+        socket.emit('search', text, (error) => {
+            if (error) { alert(error); }
+        });
+    });
 };
+
+
+// save room info and close server
+document.addEventListener("DOMContentLoaded", function() {
+    setTimeout(() => {
+        const $log = document.getElementById("log");
+        const $chat = document.getElementById("chat");
+        const $close = document.getElementById("close");
+        console.log($log, $chat, $close);
+        if ($log) {
+            $log.addEventListener("click", function() {
+                $log.setAttribute('disabled', 'disabled');
+                socket.emit('log', (error) => {
+                    $log.removeAttribute('disabled');
+                    if (error) { alert(error); }
+                });
+            });
+        }
+        if ($chat) {
+            $chat.addEventListener("click", function() {
+                $chat.setAttribute('disabled', 'disabled');
+                socket.emit('chat', (error) => {
+                    $chat.removeAttribute('disabled');
+                    if (error) { alert(error); }
+                });
+            });
+        }
+        if ($close) {
+            $close.addEventListener("click", function() {
+                if (!confirm('Are you sure you want to close the server?')) { return; }
+                $close.setAttribute('disabled', 'disabled');
+                socket.emit('close', (error) => {
+                    $close.removeAttribute('disabled');
+                    if (error) { alert(error); } else { location.href = '/'; }
+                });
+            });
+        }
+    }, 500); // x ms delay, time to wait until the elements are loaded.
+});
+
 
 socket.on('room', ({ room, users, banned }) => {
     const html = Mustache.render(sidebarTemplate, {
@@ -240,31 +259,6 @@ $fileButton.addEventListener('click', () => {
 
 
 
-// save room info and close server
-$chat.addEventListener('click', () => {
-    $chat.setAttribute('disabled', 'disabled');
-    socket.emit('chat', (error) => {
-        $chat.removeAttribute('disabled');
-        if (error) { alert(error); }
-    });
-});
-
-$close.addEventListener('click', () => {
-    if (!confirm('Are you sure you want to close the server?')) { return; }
-    $close.setAttribute('disabled', 'disabled');
-    socket.emit('close', (error) => {
-        $close.removeAttribute('disabled');
-        if (error) { alert(error); }
-    });
-});
-
-$log.addEventListener('click', () => {
-    $log.setAttribute('disabled', 'disabled');
-    socket.emit('log', (error) => {
-        $log.removeAttribute('disabled');
-        if (error) { alert(error); }
-    });
-});
 
 
 
