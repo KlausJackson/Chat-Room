@@ -37,7 +37,13 @@ const add = async ({ id, ip, username, room, isAdmin }) => {
     } 
     const bannedIPs = await getBanned();
     if (bannedIPs.includes(ip)) { return { error: 'User is banned.' }; } 
-    const user = { id, ip, username, room, isAdmin }
+    const user = { 
+        id, 
+        ip, 
+        username, 
+        room, 
+        isAdmin 
+    }
     users.push(user)
     return { user }
 };
@@ -71,7 +77,7 @@ const banUser = async (ip) => {
         users.splice(index, 1)[0] // splice(index, number of elements to remove)
         const bannedIPs = await getBanned();
         bannedIPs.push(ip);
-        await fs.writeFile('ban.json',  JSON.stringify(bannedIPs, null, 2))
+        await fs.writeFile('ban.json', JSON.stringify(bannedIPs, null, 2), 'utf8');
         return { message: 'User banned.' }
     } else { return { error: 'User not found.' } }
 };
@@ -82,7 +88,7 @@ const unbanUser = async (ip) => {
     const index = bannedIPs.indexOf(ip);
     if (index !== -1) { // if IP is found
         bannedIPs.splice(index, 1);
-        await fs.writeFile('ban.json', JSON.stringify(bannedIPs, null, 2));
+        await fs.writeFile('ban.json', JSON.stringify(bannedIPs, null, 2), 'utf8');
         return { message: 'User unbanned.' }
     } else { return { error: 'User not found.' } }
 };

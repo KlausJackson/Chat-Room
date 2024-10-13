@@ -1,10 +1,11 @@
 // IMPORTS
 const path = require('path');
 const http = require('http');
+const bodyParser = require('body-parser');
 const express = require('express'); // npm i express
 const socketio = require('socket.io'); // npm i socket.io
 const Filter = require('bad-words'); // npm i bad-words
-const { msg, location_time, log } = require('./utils/msg'); // import msg functions from msg.js
+const { msg, location_time, log, get_log, getFile, get_chat, load } = require('./utils/msg'); // import msg functions from msg.js
 
 // import users management functions from file.js
 const { add,
@@ -29,6 +30,10 @@ const server = http.createServer(app); // refactoring to parse it later.
 const io = socketio(server); // socket.io expects to be called with the raw http server.
 const port = process.env.port || 3000; 
 const publicpath = path.join(__dirname, '../public');
+app.use(express.json({ limit: '10mb' }));
+app.use(express.urlencoded({ extended: true, limit: '10mb' }));
+
+
 
 // Middleware
 app.use(express.static(publicpath));
@@ -42,7 +47,7 @@ function format() {
     // const hours = String(now.getHours()).padStart(2, '0');
     // const minutes = String(now.getMinutes()).padStart(2, '0');
     // const seconds = String(now.getSeconds()).padStart(2, '0');
-
+    
     return `${year}-${month}-${day}`;
 }
 const filename = `log_${format()}.txt`;
@@ -96,7 +101,13 @@ io.on('connection', (socket) => {
         } 
 
         // add user to the users array, socket.id : unique id for the connection
-        const { error, user } = await add({ id: socket.id, ip, username, room, isAdmin: admin });
+        const { error, user } = await add({ 
+            id: socket.id, 
+            ip, 
+            username, 
+            room, 
+            isAdmin: admin 
+        });
         if (error) { 
             await log(filename, `${time} - ${socket.id} - ${username} - ${ip} - ${room} - ${password} - failed to log in - ${error}.`);
             return callback(error);
@@ -104,8 +115,8 @@ io.on('connection', (socket) => {
 
         // user.room and user.username: values after trimming and lowercasing
         socket.join(user.room);
-        socket.emit('message', msg(`Welcome to room ${user.room}!`)); // emit to the client
-        io.to(user.room).emit('message', msg(`${user.username} has joined!`)); // emit to all clients
+        socket.emit('load', await load(user.room)); // emit to the client
+        io.to(user.room).emit('message', await msg(user.room, `${user.username} has joined!`)); // emit to all clients
         await log(filename, `${time} - ${socket.id} - ${username} - ${ip} - ${room} - ${password} - successfully joined.`);
         update_info(user);
         callback() 
@@ -121,28 +132,17 @@ io.on('connection', (socket) => {
             await log(filename, `${new Date().toLocaleString()} - ${user.ip} - ${user.username} - ${message} - profanity detected.`);
             return callback('No profanity.'); 
         }
-        io.to(user.room).emit('message', msg(user.username, message)); // emit to all clients
+        io.to(user.room).emit('message', await msg(user.room, user.username, message)); // emit to all clients
         callback();
     });
 
 
     // handle file sharing
-    socket.on('file', (file, callback) => {
+    socket.on('file', async (file, callback) => {
         const user = get(socket.id);
-        if (!user) { return; }
-        const alias = user.username;
-        console.log('file received from client');        
-        const { name, data, isImage, isVideo } = file; // import file from utils
-        io.to(user.room).emit('file', {
-            alias,
-            name,
-            data,
-            time : new Date().toLocaleString(),
-            isImage,
-            isVideo
-        });
-        console.log('file sent to clients');
-        callback();
+        if (!user) { return; }   
+        io.to(user.room).emit('file', await getFile(user.room, user.username, file)); // emit to all clients
+        callback();            
     });
 
 
@@ -187,33 +187,51 @@ io.on('connection', (socket) => {
             await changepass(password);
             await log(filename, `${new Date().toLocaleString()} - ${socket.id} - ${get(socket.id).username} - ${get(socket.id).ip} - ${get(socket.id).room} - changed the password.`);
             callback();    
-        } catch (e) {
-            callback('Error changing password:', e.message);
-        }
-    });
-
-    socket.on('search', (text, callback) => {
-        if (text.trim() === '') { return callback('Search text cannot be empty.'); }
-        console.log(text);
-        callback();
+        } catch (e) { callback('Error changing password:', e); }
     });
 
 
+    // close, save log, save chat
     socket.on('close', async (callback) => {
         if (!admin) { return callback('You are not an admin.'); }
-        server.close(async (e) => {
-            if (e) { return callback('Error closing the server:', e.message); }
-            await log(filename, 'Server closed at ' + new Date().toLocaleString() + 'by ' + getIP(get(socket.id).username) + '.');
-            callback();
-        });
+        server.close(async (e) => { if (e) { return callback(e); } });
     });
+
+    socket.on('chat', async (callback) => {
+        try {
+            const data = await get_chat(get(socket.id).room);
+            callback(null, {
+                data: data,
+                filename: `${get(socket.id).room}.json`
+            });
+        } catch (e) { callback('Error reading log file ', e); }
+    });
+
+    socket.on('log', async (callback) => {
+        if (!admin) { return callback('You are not an admin.', { data: null, filename: null }); }
+        try {
+            const data = await get_log(filename);
+            callback(null, { data: data, filename: filename });
+        } catch (e) { callback('Error reading log file ', e); }
+    });
+
+
+
+    // handle typing
+    socket.on('typing', (data) => {
+        socket.broadcast.emit('userTyping', data); // notify others that the user is typing
+    });
+    socket.on('no_typing', () => {
+        socket.broadcast.emit('userStoppedTyping'); // notify others that the user stopped typing
+    });
+
 
 
     // handle disconnection
     socket.on('disconnect', async () => {
         const user = remove(socket.id);
         if (user) {
-            io.to(user.room).emit('message', msg(`${user.username} has left.`));
+            io.to(user.room).emit('message', await msg(user.room, `${user.username} has left.`));
             await log(filename, `${new Date().toLocaleString()} - ${socket.id} - ${user.username} - ${user.ip} - ${user.room} - disconnected.`);
             update_info(user);          
         } // in case the user never joined the room
@@ -223,8 +241,7 @@ io.on('connection', (socket) => {
     socket.on('location', (coords, callback) => {
         const user = get(socket.id);
         if (!user) { return; }
-        io.to(user.room).emit('location', 
-            location_time(user.username, `https://google.com/maps?q=${coords.latitude},${coords.longitude}`));
+        io.to(user.room).emit('location', location_time(user.username, `https://google.com/maps?q=${coords.latitude},${coords.longitude}`));
         callback();
     }); // google maps link
 });

@@ -48,40 +48,16 @@ if (p) {
 
 
 // LISTEN FOR EVENTS FROM SERVER
-// messages
 socket.on('message', (message) => {
-    const html = Mustache.render(msgTemplate, {
-        username: message.username,
-        message: message.text,
-        time: message.time
-    }); // render the template with the message
+    const html = Mustache.render(msgTemplate, message); // render the template with the message
     $messages.insertAdjacentHTML('beforeend', html); // insert the message into the div
 });
-
-
-// location
 socket.on('location', (location) => {
-    const html = Mustache.render(locTemplate, {
-        username: location.username,
-        location: location.location,
-        time: location.time
-    });
+    const html = Mustache.render(locTemplate, location);
     $messages.insertAdjacentHTML('beforeend', html);
 });
-
-
-// files
-socket.on('file', ({ alias, name, data, time, isImage, isVideo }) => {
-    const html = Mustache.render(fileTemplate, {
-        username: alias,
-        filename: name,
-        file: data,
-        time: time,
-        isImage: isImage,
-        isVideo: isVideo        
-    });
-    console.log('file received from server');
-    console.log(alias, name, isImage, isVideo);
+socket.on('file', (all) => {
+    const html = Mustache.render(fileTemplate, all);
     $messages.insertAdjacentHTML('beforeend', html);
 });
 
@@ -94,21 +70,48 @@ socket.on('banned', () => {
 
 
 
+// UX : TYPING INDICATOR
+let typingTimeout;
+
+function typing() {
+    // notify others that the user is typing
+    socket.emit('typing', { username }); // username from the parsed query string
+    clearTimeout(typingTimeout);
+    // notify others that the user is no longer typing
+    typingTimeout = setTimeout(() => { socket.emit('no_typing'); }, 1000); // user stop typing after 1 second
+}
+
+// typing
+socket.on('userTyping', (data) => {
+    const typingIndicator = document.getElementById('typing-indicator');
+    typingIndicator.textContent = `${data.username} is typing...`;
+    typingIndicator.style.display = 'block'; // show the typing indicator
+});
+
+// stop typing
+socket.on('userStoppedTyping', () => {
+    const typingIndicator = document.getElementById('typing-indicator');
+    typingIndicator.style.display = 'none'; // hide the typing indicator
+});
+
+// event listener to message input for typing detection
+$msgFormInput.addEventListener('input', typing);
+
+
+
+
 // SIDEBAR : room info and actions
 function setupEventListeners() {
     const $banButtons = document.querySelectorAll('.ban');
     const $unbanButtons = document.querySelectorAll('.unban');
     const $changepass = document.querySelector('#change-pw-form');
-    const $search = document.querySelector('#search-form');
 
     $banButtons.forEach($banButton => {
         $banButton.addEventListener('click', () => {
             if (!confirm('Are you sure you want to ban this user?')) { return; }
             const username = $banButton.getAttribute('data-username'); 
             console.log(username);
-            socket.emit('ban', username, (error) => {
-                if (error) { alert(error); }
-            });
+            socket.emit('ban', username, (e) => { if (e) { alert(e); } });
         });
     });
 
@@ -117,9 +120,7 @@ function setupEventListeners() {
             if (!confirm('Are you sure you want to unban this user?')) { return; }
             const ip = $unbanButton.getAttribute('data-ip');
             console.log(ip);
-            socket.emit('unban', ip, (error) => {
-                if (error) { alert(error); }
-            });
+            socket.emit('unban', ip, (e) => { if (e) { alert(e); } });
         });
     });
 
@@ -133,65 +134,55 @@ function setupEventListeners() {
         });
     });
 
-    $search.addEventListener('submit', (e) => {
-        e.preventDefault();
-        if ($search.querySelector('input').value === '') { return; }
-        const text = e.target.elements['search-input'].value;
-        socket.emit('search', text, (error) => {
-            if (error) { alert(error); }
+
+    const $log = document.getElementById("log");
+    const $chat = document.getElementById("chat");
+    const $close = document.getElementById("close");
+
+    $log.addEventListener("click", function() {
+        if (!confirm('Do you want to download the server log?')) { return; }
+        $log.setAttribute('disabled', 'disabled');
+        socket.emit('log', (e, { data, filename }) => {
+            $log.removeAttribute('disabled');
+            if (e) { alert(e); } 
+            else { downloadFile(data, filename, 'text/plain'); }
+        });
+    });
+    $chat.addEventListener("click", function() {
+        $chat.setAttribute('disabled', 'disabled');
+        socket.emit('chat', (e, { data, filename }) => {
+            $chat.removeAttribute('disabled');
+            if (e) { alert(e); }
+            else { downloadFile(JSON.stringify(data, null, 2), filename, 'application/json'); }
+        });
+    });
+    $close.addEventListener("click", function() {
+        if (!confirm('Are you sure you want to close the server?')) { return; }
+        $close.setAttribute('disabled', 'disabled');
+        socket.emit('close', (e) => {
+            $close.removeAttribute('disabled');
+            if (e) { alert(e); }
         });
     });
 };
 
 
-// save room info and close server
-document.addEventListener("DOMContentLoaded", function() {
-    setTimeout(() => {
-        const $log = document.getElementById("log");
-        const $chat = document.getElementById("chat");
-        const $close = document.getElementById("close");
-        console.log($log, $chat, $close);
-        if ($log) {
-            $log.addEventListener("click", function() {
-                $log.setAttribute('disabled', 'disabled');
-                socket.emit('log', (error) => {
-                    $log.removeAttribute('disabled');
-                    if (error) { alert(error); }
-                });
-            });
-        }
-        if ($chat) {
-            $chat.addEventListener("click", function() {
-                $chat.setAttribute('disabled', 'disabled');
-                socket.emit('chat', (error) => {
-                    $chat.removeAttribute('disabled');
-                    if (error) { alert(error); }
-                });
-            });
-        }
-        if ($close) {
-            $close.addEventListener("click", function() {
-                if (!confirm('Are you sure you want to close the server?')) { return; }
-                $close.setAttribute('disabled', 'disabled');
-                socket.emit('close', (error) => {
-                    $close.removeAttribute('disabled');
-                    if (error) { alert(error); } else { location.href = '/'; }
-                });
-            });
-        }
-    }, 500); // x ms delay, time to wait until the elements are loaded.
-});
-
-
-socket.on('room', ({ room, users, banned }) => {
-    const html = Mustache.render(sidebarTemplate, {
-        room,
-        users,
-        banned
-    });
+document.addEventListener("DOMContentLoaded", () => { setupEventListeners(); });
+socket.on('room', (room_info) => {
+    const html = Mustache.render(sidebarTemplate, room_info);
     document.querySelector('#sidebar').innerHTML = html;
     setupEventListeners(); // must be after the sidebar is rendered 
 });
+
+socket.on('load', (items) => {
+    items.forEach((item) => {
+        const html = item.type === 'message' 
+            ? Mustache.render(msgTemplate, item) 
+            : Mustache.render(fileTemplate, item);
+        $messages.insertAdjacentHTML('beforeend', html);
+    });
+});
+
 
 
 
@@ -215,17 +206,14 @@ $msgForm.addEventListener('submit', (e) => {
 
 // send location
 $location.addEventListener('click', () => {
-    if (!navigator.geolocation) {
-        return alert('Geolocation is not supported by your browser.');
-    } // not all browsers support geolocation.
+    if (!navigator.geolocation) { return alert('Geolocation is not supported by your browser.'); } // not all browsers support geolocation.
     $location.setAttribute('disabled', 'disabled');
 
     navigator.geolocation.getCurrentPosition((position) => {
         socket.emit('location', {
             latitude: position.coords.latitude,
             longitude: position.coords.longitude
-        }, () => { countdown(5); 
-        });
+        }, () => { countdown(5); });
     });
 });
 
@@ -234,35 +222,26 @@ $location.addEventListener('click', () => {
 $fileButton.addEventListener('click', () => {
     const file = $fileInput.files[0]; // get the file
     if (file) {
+        if (file.size > 900000) { return alert('File size must be less than 900kb.'); }
         const reader = new FileReader();
-        const isImage = file.type.startsWith('image/');
-        const isVideo = file.type.startsWith('video/');
-
         reader.onload = function(event) {
-            const data = event.target.result; //  base64 encoded string
-            const name = file.name;
-            socket.emit('file', { 
-                name, 
-                data, 
-                isImage,
-                isVideo 
-            }, (e) => {
-                if (e) { alert(e); }
-            }); // Send file data to the server
+            const all = {
+                filename: file.name, 
+                data: event.target.result, //  base64 encoded string
+                isImage: file.type.startsWith('image/'),
+                isVideo: file.type.startsWith('video/')
+            }
+            socket.emit('file', all, (e) => { if (e) { alert(e); } });
         };
-        reader.readAsDataURL(file); // read the file as a data URL
-        $fileInput.value = ''; // clear the input
-        console.log('file sent to server');
-        console.log(file.name, isImage, isVideo);
+        reader.onerror = function() { alert('Error reading file. Please try again.'); };
+        reader.readAsDataURL(file); // read the file as a data URL, trigger the onload event
+        $fileInput.value = '';
     } else { alert('Please select a file.'); }
 });
 
 
 
-
-
-
-// countdown for location sharing
+// functions
 function countdown(seconds) {
     const count = setInterval(() => {
         seconds--;
@@ -272,6 +251,20 @@ function countdown(seconds) {
         }
     }, 1000);
 };
+
+function downloadFile(data, filename, type) {
+    const blob = new Blob([data], { type: type }); // create a blob from the data
+    const url = window.URL.createObjectURL(blob); // create a URL for the blob
+    const a = document.createElement('a'); // create a link element
+
+    a.style.display = 'none'; // hide the link
+    a.href = url; // set the link's URL
+    a.download = filename; // set the download attribute
+
+    document.body.appendChild(a); // append the link to the body
+    a.click(); // simulate a click on the link
+    window.URL.revokeObjectURL(url); // release the object URL
+}
 
 
 
@@ -283,6 +276,4 @@ socket.emit('join', { username, room, password }, (error) => {
         location.href = '/'; // redirect to the homepage
     } 
 });
-
-
 

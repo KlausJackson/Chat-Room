@@ -85,16 +85,23 @@ button:disabled {
     width: fit-content;
     flex-direction: column;
     transition: width 0.3s ease;
-    overflow-y: hidden;
+    overflow-y: scroll; /* Hide scrollbar */
+    scrollbar-width: none; /* Firefox */
+    -ms-overflow-style: none; /* Internet Explorer, Edge */
     height: 100vh;
     width: 200px;
     background: #333744;
 }
+
+.sidebar::-webkit-scrollbar {
+    display: none; /* Safari, Chrome, Opera */
+}
+
 .sidebar-button {
     background: none; /* No background for buttons */
 }
 
-.section button, .section1 button {
+.section button {
     padding: 5px;
     margin: 5px;
 }
@@ -147,7 +154,6 @@ button:disabled {
 
 #sidebar.collapsed .room-title,
 #sidebar.collapsed .section,
-#sidebar.collapsed .section1,
 #sidebar.collapsed .users,
 #sidebar.collapsed .banned {
     display: none;

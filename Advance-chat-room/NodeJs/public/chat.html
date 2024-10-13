@@ -23,16 +23,17 @@
 
         <div class="main">
             <div id="messages" class="all-messages"></div>
-            <div class="compose">
+            <div id="typing-indicator" ></div>
+            <div class="compose"> <!-- style="display: none; font-style: italic;" -->
                 <form id="message-form">
-                    <input class="sendtext" name="message" type="text" placeholder="Message..." autocomplete="off">
-                    <button class="sendButton" type="submit" id="send"><i class="fas fa-paper-plane"></i></button>
+                    <input class="sendtext" name="message" type="text" placeholder="Message..." autocomplete="off" oninput="typing()">
+                    <button class="sendButton" type="submit" id="send" title="Send Message"><i class="fas fa-paper-plane"></i></button>
                 </form>
                 <div class="buttons">
-                    <button id="send-location"><i class="fas fa-map-marker-alt"></i></button>
+                    <button id="send-location" title="Send Location"><i class="fas fa-map-marker-alt"></i></button>
                     <label id="file" for="file-input" title="Send File"><i class="fas fa-paperclip"></i></label>
                     <input type="file" id="file-input">
-                    <button id="send-file"><i class="fas fa-upload"></i></button>
+                    <button id="send-file" title="Send File"><i class="fas fa-upload"></i></button>
                 </div>
             </div>
         </div>
@@ -47,7 +48,7 @@
                 <span class="alias">{{username}}</span>
                 <span class="stamp">{{time}}</span>
             </p>
-            <p id="msg">{{message}}</p>
+            <p id="msg">{{text}}</p>
         </div>
     </script>
 
@@ -73,16 +74,16 @@
             </p>
             <p>
                 {{#isImage}}
-                    <img src="{{file}}" alt="{{filename}}" style="max-width: 100%; height: auto;" /> <!-- show image -->
+                    <img src="{{data}}" alt="{{filename}}" style="max-width: 100%; height: auto;" /> <!-- show image -->
                 {{/isImage}}
                 {{#isVideo}}
                     <video controls style="max-width: 100%; height: auto;">
-                        <source src="{{file}}" type="video/mp4">
+                        <source src="{{data}}" type="video/mp4">
                         Your browser does not support the video tag.
                     </video> <!-- show video -->
-                {{/isVideo}}
+                {{/isVideo}} 
                 {{^isImage}}{{^isVideo}}
-                    <a href="{{file}}" target="_blank">{{filename}}</a> <!-- show link if not an image or video -->
+                    <a href="{{data}}" download="{{filename}}" target="_blank">{{filename}}</a> <!-- show link if not an image or video -->
                 {{/isVideo}}{{/isImage}}
             </p>
         </div>
@@ -143,13 +144,6 @@
             </form>
         </div>
         <hr>
-        <div id="search-msg" class="section1">
-            <p class="list-title">Search message</p>
-            <form id="search-form">
-                <input type="text" id="search-field" name="search-input" placeholder="Search message...">
-                <button id="searchButton" type="submit">Search</button>
-            </form>
-        </div>
 
         <button id="log" class="sidebar-button" type="button">
             <span class="icon"><i class="fas fa-file-invoice"></i></span>
@@ -241,7 +235,7 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/mustache.js/4.0.0/mustache.min.js"></script> <!-- for rendering templates -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.1/moment.min.js"></script> <!-- for date and time manipulation -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/qs/6.10.1/qs.min.js"></script> <!-- for parsing query strings -->
-    <script src="/socket.io/socket.io.js"></script> 
+    <script src="/js/socket.io.js"></script>
     <script src="/js/chat.js"></script> <!-- ensure that the chat.js file is loaded last -->
 </body>
 </html>
