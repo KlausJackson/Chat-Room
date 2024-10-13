@@ -5,7 +5,7 @@
   "bin": "src/index.js",
   "scripts": {
     "start": "node src/index.js",
-    "dev": "nodemon src/index.js --ignore 'ban.json' --ignore '*.txt' --ignore '*.sqlite' --ignore '*.db' --ignore '*.json'"
+    "dev": "nodemon src/index.js --ignore '*.json' --ignore 'ban.json' --ignore '*.txt' --ignore '*.db' "
   },
   "author": "",
   "license": "ISC",
@@ -21,7 +21,8 @@
       "node18-win-x64"
     ],
     "assets": [
-      "public/**/*"
+      "public/**/*",
+      "node_modules/sqlite3/**/*"
     ]
   }
 }

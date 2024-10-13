@@ -72,7 +72,7 @@ const load = (room) => {
 
 
 const getFile = (room, username, file) => {
-    const { filename, data, isImage, isVideo, isAudio } = file; // import file from utils
+    const { filename, data, isImage, isVideo } = file; // import file from utils
     const all = { 
         username: username, 
         filename: filename, 
@@ -84,7 +84,7 @@ const getFile = (room, username, file) => {
 
     // insert file into the database
     return new Promise((resolve, reject) => {
-        const stmt = db.prepare("insert into files (username, filename, data, time, isImage, isVideo, room) values (?, ?, ?, ?, ?, ?, ?, ?)");
+        const stmt = db.prepare("insert into files (username, filename, data, time, isImage, isVideo, room) values (?, ?, ?, ?, ?, ?, ?)");
         stmt.run(all.username,  all.filename,  all.data,  all.time,  all.isImage,  all.isVideo, room, (e) => {
             if (e) { 
                 console.log('Error inserting file:', e.message); 
@@ -143,6 +143,6 @@ module.exports = {
 }
 
 
-// db.close((err) => {
-//     if (err) { console.error('Error closing the database:', err.message); }
-// });
+db.close((err) => {
+    if (err) { console.error('Error closing the database:', err.message); }
+});

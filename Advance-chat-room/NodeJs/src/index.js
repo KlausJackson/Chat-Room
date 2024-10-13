@@ -1,7 +1,6 @@
 // IMPORTS
 const path = require('path');
 const http = require('http');
-const bodyParser = require('body-parser');
 const express = require('express'); // npm i express
 const socketio = require('socket.io'); // npm i socket.io
 const Filter = require('bad-words'); // npm i bad-words
