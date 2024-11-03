@@ -1,241 +1,201 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <title>Chat Room</title> <!-- web title -->
+    <title>Chat Room</title>
     <link rel="icon" type="image/jpeg" href="img/logo.jpg">
-    <link rel="stylesheet" href="style_chat.css">
-    <meta charset="UTF-8"> <!-- defines the character encoding for the document. -->
-    <meta http-equiv="X-UA-Compatible" content="IE-edge">
-    <!-- ensures that the page is displayed using the latest version of Internet 
-        Explorer's rendering engine, ignoring compatibility modes. -->
+    <link rel="stylesheet" href="output.css">
+    <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <!-- crucial for responsive web design. It sets the viewport's width to 
-        the device's width and ensures proper scaling on different screen sizes. -->
     <meta name="description" content="Join our chat room to connect and communicate with others.">
     <meta name="keywords" content="chat, communication, forum, discussion">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
 </head>
-
-<body class="chat">
-    <div class="all">
-        <div id="sidebar" class="sidebar">
-        </div>
-
-        <div class="main">
-            <div id="messages" class="all-messages"></div>
-            <div id="typing-indicator" ></div>
-            <div class="compose"> <!-- style="display: none; font-style: italic;" -->
-                <form id="message-form">
-                    <input class="sendtext" name="message" type="text" placeholder="Message..." autocomplete="off" oninput="typing()">
-                    <button class="sendButton" type="submit" id="send" title="Send Message"><i class="fas fa-paper-plane"></i></button>
+<body class="bg-gray-900 text-white">
+    <div class="flex flex-col md:flex-row h-screen">
+        <div id="sidebar" class="sidebar bg-gray-800 p-2 shadow-lg overflow-y-auto"></div>
+        <div class="main p-1 flex-grow flex flex-col">
+            <div id="messages" class="flex-1 overflow-y-auto p-2 bg-gray-800 rounded-md shadow-lg"></div>
+            <div id="typing-indicator" class="text-gray-400 mb-2"></div>
+            <div class="compose flex items-center"> <!-- style="display: none; font-style: italic;" -->
+                <form id="message-form" class="flex-grow flex">
+                    <textarea rows="2" class="border border-gray-600 rounded-md flex-grow bg-gray-700 placeholder-gray-400" 
+                    name="message" type="text" placeholder="Message..." autocomplete="off" oninput="typing()"></textarea>
+                    <button class="sendButton p-2 bg-blue-600 text-white rounded-md hover:bg-blue-700" type="submit" id="send" title="Send Message"><i class="fas fa-paper-plane"></i></button>
                 </form>
-                <div class="buttons">
-                    <button id="send-location" title="Send Location"><i class="fas fa-map-marker-alt"></i></button>
+                <div class="flex space-x-2">
+                    <button id="send-location" title="Send Location"
+                    class="bg-green-600 text-white rounded-md p-2 hover:bg-green-700">
+                        <i class="fas fa-map-marker-alt"></i>
+                    </button>
                     <label id="file" for="file-input" title="Send File"><i class="fas fa-paperclip"></i></label>
-                    <input type="file" id="file-input">
-                    <button id="send-file" title="Send File"><i class="fas fa-upload"></i></button>
+                    <input type="file" id="file-input" class="hidden">
+                    <button id="send-file" title="Send File" class="bg-yellow-600 text-white p-2 rounded-md  hover:bg-yellow-700"><i class="fas fa-upload"></i></button>
                 </div>
             </div>
         </div>
     </div>
-
-
-    <!-- SCRIPTS -->
-    <!-- MESSAGES -->
     <script id="message-template" type="text/html">
-        <div class="message">
+        <div class="mb-3">
             <p>
-                <span class="alias">{{username}}</span>
-                <span class="stamp">{{time}}</span>
+                <span class="font-semibold">{{username}}</span>
+                <span class="text-gray-400">{{time}}</span>
             </p>
-            <p id="msg">{{text}}</p>
         </div>
     </script>
-
-
-    <!-- LOCATION -->
     <script id="location-template" type="text/html">
-        <div class="location">
+        <div class="location mb-3">
             <p>
-                <span class="alias">{{username}}</span>
-                <span class="stamp">{{time}}</span>
+                <span class="font-semibold">{{username}}</span>
+                <span class="text-gray-400">{{time}}</span>
             </p>
-            <p><a href="{{location}}" target="_blank">Current location</a></p> <!-- target="_blank" opens the link in a new tab -->
+            <p><a href="{{location}}" target="_blank" class="text-blue-400">Current location</a></p>
         </div>
     </script>
-
-
-    <!-- FILES -->
     <script id="file-template" type="text/template">
-        <div class="file">
+        <div class="file mb-3">
             <p>
-                <span class="alias">{{username}}</span>
-                <span class="stamp">{{time}}</span>
+                <span class="font-semibold">{{username}}</span>
+                <span class="text-gray-400">{{time}}</span>
             </p>
             <p>
                 {{#isImage}}
-                    <img src="{{data}}" alt="{{filename}}" style="max-width: 100%; height: auto;" /> <!-- show image -->
+                    <img src="{{data}}" alt="{{filename}}" class="max-w-full h-auto rounded-md" /> 
+                    <!--style="max-width: 100%; height: auto;" -->
                 {{/isImage}}
                 {{#isVideo}}
-                    <video controls style="max-width: 100%; height: auto;">
+                    <video controls class="max-w-full h-auto rounded-md">>
                         <source src="{{data}}" type="video/mp4">
                         Your browser does not support the video tag.
-                    </video> <!-- show video -->
+                    </video>
                 {{/isVideo}} 
                 {{^isImage}}{{^isVideo}}
-                    <a href="{{data}}" download="{{filename}}" target="_blank">{{filename}}</a> <!-- show link if not an image or video -->
+                    <a href="{{data}}" download="{{filename}}" target="_blank" class="text-blue-400">{{filename}}</a>
                 {{/isVideo}}{{/isImage}}
             </p>
         </div>
     </script>
-
-
-    <!-- SIDEBAR -->
     <script id="sidebar-template" type="text/html">
-        <button id="toggle-btn" onclick="toggleSidebar()" class="sidebar-button"><i class="fas fa-bars"></i></button>
-        <label class="room-title">Room: {{room}}</label>
-        <!-- <button onclick="showSection('users')"><i class="fas fa-users"></i> Users</button>
-        <button onclick="showSection('banned')"><i class="fas fa-user-slash"></i> Banned</button>
-        <button onclick="showSection('change-pw')"><i class="fas fa-key"></i> Change Password</button>
-        <button onclick="goBack()"><i class="fas fa-arrow-left"></i> Back</button> -->
-
-
-        <button onclick="showSection('users')" class="sidebar-button">
-            <span class="icon"><i class="fas fa-users"></i></span>
-            <span class="text">Users</span>                
-        </button>
-        <button onclick="showSection('banned')" class="sidebar-button">
-            <span class="icon"><i class="fas fa-user-slash"></i></span>
-            <span class="text">Banned</span>
-        </button>
-        <button onclick="showSection('change-pw')" class="sidebar-button">
-            <span class="icon"><i class="fas fa-key"></i></span>
-            <span class="text">Change Password</span>
-        </button>
-        <button onclick="goBack()" class="sidebar-button">
-            <span class="icon"><i class="fas fa-arrow-left"></i></span>
-            <span class="text">Back</span>
-        </button>
-
-        <hr>
-        <div id="users" class="section">
-            <p class="list-title">Users</p>
-            <ul class="users">
-                {{#users}}
-                    <li>{{username}}<button class="ban" data-username="{{username}}"><i class="fas fa-ban"></i></button></li>
-                {{/users}}
-            </ul>
+        <div class="relative">
+            <button id="toggle-btn" onclick="toggleSidebar()" type="button" data-drawer-target="drawer-navigation" data-drawer-show="drawer-navigation" aria-controls="drawer-navigation" tabindex="0" title="Toggle Drawer"
+            class="text-white rounded-md bg-blue-700 hover:bg-blue-800 font-medium text-sm px-3 py-2.5 dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none absolute top-0 left-0 z-50"></button>
+            <div id="drawer-navigation" class="fixed top-0 left-0 z-40 h-screen p-4 overflow-y-auto transition-transform -translate-x-full bg-white w-64 dark:bg-gray-800" 
+            tabindex="-1" aria-labelledby="drawer-navigation-label">
+                <label class="text-lg font-bold text-center">Room: {{room}}</label>
+                <button type="button" onclick="toggleDropdown1()" aria-controls="dropdown-1" data-collapse-toggle="dropdown-1"
+                class="flex items-center w-full p-2 text-base text-gray-900 transition duration-75 rounded-lg group hover:bg-gray-100 dark:text-white dark:hover:bg-gray-700">
+                    Users
+                </button>
+                <button type="button" onclick="toggleDropdown2()" aria-controls="dropdown-2" data-collapse-toggle="dropdown-2"
+                class="flex items-center w-full p-2 text-base text-gray-900 transition duration-75 rounded-lg group hover:bg-gray-100 dark:text-white dark:hover:bg-gray-700">
+                    Banned
+                </button>
+                <button type="button" onclick="toggleDropdown2()" aria-controls="dropdown-2" data-collapse-toggle="dropdown-2"
+                class="flex items-center w-full p-2 text-base text-gray-900 transition duration-75 rounded-lg group hover:bg-gray-100 dark:text-white dark:hover:bg-gray-700">
+                    Rooms
+                </button>
+                <hr>
+                <div class="my-4">
+                    <p class="text-md font-semibold">Users</p>
+                    <ul class="list-disc pl-5 hidden py-1" id="dropdown-1">
+                        {{#users}}
+                            <li class="flex justify-between items-center">{{username}}
+                                <button class="ban items-center p-1 text-base text-red-500 transition duration-75 rounded-lg group hover:bg-gray-100  dark:hover:bg-gray-700" data-username="{{username}}">
+                                    <i class="fas fa-ban"></i>
+                                </button>
+                            </li>
+                        {{/users}}
+                    </ul>
+                </div>
+                <hr>
+                <div class="my-4">
+                    <p class="text-md font-semibold">Banned IP</p>
+                    <ul class="list-disc pl-5 hidden py-1" id="dropdown-2">
+                        {{#banned}}
+                            <li class="flex justify-between items-center">{{ip}}
+                                <button class="unban items-center p-1 text-base text-green-500 transition duration-75 rounded-lg group hover:bg-gray-100 dark:text-white dark:hover:bg-gray-700" data-ip="{{ip}}">
+                                    <i class="fas fa-user-check"></i>
+                                </button>
+                            </li>
+                        {{/banned}}
+                    </ul>
+                </div>
+                <hr>
+                <!-- <div id="change-pw" class="mb-4">
+                    <p class="text-md font-semibold">Change Password</p>
+                    <form id="change-pw-form" class="flex">
+                        <input type="password" id="new-password" name="new-password" class="border border-gray-600 rounded-md bg-gray-700 placeholder-gray-400" placeholder="New Password">
+                        <button id="change-pwButton" type="submit" class="items-center p-2 text-base text-red-500 transition duration-75 rounded-lg group hover:bg-gray-100  dark:hover:bg-gray-700">|</button>
+                    </form>
+                    </div> -->
+                <hr>
+                <button id="chat" class="flex items-center w-full p-2 text-base text-gray-900 transition duration-75 rounded-lg group hover:bg-gray-100 dark:text-white dark:hover:bg-gray-700" type="button">
+                Save chat
+                </button>
+                <button id="close" class="flex items-center w-full p-2 text-base text-gray-900 transition duration-75 rounded-lg group hover:bg-gray-100 dark:text-white dark:hover:bg-gray-700" type="button">
+                Close Server
+                </button>
+            </div>
         </div>
-        <hr>
-        <div id="banned" class="section">
-            <p class="list-title">Banned IP</p>
-            <ul class="banned">
-                {{#banned}}
-                    <li>{{ip}}<button class="unban" data-ip="{{ip}}"><i class="fas fa-user-check"></i></button></li>
-                {{/banned}}
-            </ul>
-        </div>
-        <hr>
-        <div id="change-pw" class="section">
-            <p class="list-title">Change Password</p>
-            <form id="change-pw-form">
-                <input type="password" id="new-password" name="new-password">
-                <button id="change-pwButton" type="submit">Change Password</button>
-            </form>
-        </div>
-        <hr>
-
-        <button id="log" class="sidebar-button" type="button">
-            <span class="icon"><i class="fas fa-file-invoice"></i></span>
-            <span class="text">Save log</span>
-        </button>
-        <button id="chat" class="sidebar-button" type="button">
-            <span class="icon"><i class="fas fa-comments"></i></span>
-            <span class="text">Save chat</span>
-        </button>
-        <button id="close" class="sidebar-button" type="button">
-            <span class="icon"><i class="fas fa-power-off"></i></span>
-            <span class="text">Close Server</span>
-        </button>
     </script>
-    
-    
     <script>
-        function toggleSidebar() {
-            const sidebar = document.getElementById('sidebar');
-            sidebar.classList.toggle('collapsed');
-            goBack();
-        } // toggle the sidebar
-
-        function showSection(sectionId) {
-            if (sidebar.classList.contains('collapsed')) {
-                sidebar.classList.remove('collapsed');
-            } 
-            const sections = document.querySelectorAll('.section');
-            sections.forEach(section => {
-                if (section.id !== "search-msg") { section.style.display = 'none'; }
-            }); 
-            document.getElementById(sectionId).style.display = 'block'; 
-        } // show the selected section
-
-        function goBack() {
-            const sections = document.querySelectorAll('.section');
-            sections.forEach(section => {
-                if (section.id !== "search-msg") { section.style.display = 'none'; }
-            }); // go back to the main view
+        function toggleDropdown1() {
+            const dropdown = document.getElementById('dropdown-1');
+            dropdown.classList.toggle('hidden');
         }
-
-        function adjustMessageWidth() {
-            const sidebar = document.getElementById('sidebar');
+        function toggleDropdown2() {
+            const dropdown = document.getElementById('dropdown-2');
+            dropdown.classList.toggle('hidden');
+        }
+        // function toggleDropdown3() {
+        //     const dropdown = document.getElementById('dropdown-3');
+        //     dropdown.classList.toggle('hidden');
+        // }
+        function toggleSidebar() {
+            const drawer = document.getElementById('drawer-navigation');
+            drawer.classList.toggle('-translate-x-full');
+        }
+        // function adjustMessageWidth() {
+        //     const messages = document.getElementById('messages');
+        //     const messageElements = messages.querySelectorAll('.msg'); 
+        //     messageElements.forEach(msg => {
+        //         msg.style.maxWidth = `${messages.clientWidth}px`;
+        //     });
+        // }
+        function adjustFileSize() {
             const messages = document.getElementById('messages');
-            const sidebarWidth = sidebar.offsetWidth;
-            const availableWidth = messages.clientWidth - sidebarWidth; // Calculate available width for messages
-
-            const messageElements = messages.querySelectorAll('#msg');
-            messageElements.forEach(msg => {
-                msg.style.maxWidth = `${availableWidth}px`; // Set max width based on available space
+            const files = messages.querySelectorAll('.file');
+            files.forEach(f => { 
+              //  img.style.maxWidth = `${main.offsetWidth}px`;
+                f.style.width = '100%'
             });
         }
-
-        function adjustImageSize() {
-            const sidebar = document.getElementById('sidebar');
-            const main = document.querySelector('.main');
-            const messages = document.getElementById('messages');
-            const sidebarWidth = sidebar.offsetWidth;
-            const mainWidth = main.offsetWidth;
-            const availableWidth = mainWidth - sidebarWidth;
-            const images = messages.querySelectorAll('img');
-            images.forEach(img => { img.style.maxWidth = `${availableWidth}px`; });
-        }
-
         function autoscroll() {
             const messages = document.getElementById('messages');
             messages.scrollTop = messages.scrollHeight;
         }
-
         window.addEventListener('load', () => {
-            adjustMessageWidth();
-            adjustImageSize();
+          //  adjustMessageWidth();
+            adjustFileSize();
+            autoscroll();
         });
         window.addEventListener('resize', () => {
-            adjustMessageWidth();
-            adjustImageSize();
+          //  adjustMessageWidth();
+            adjustFileSize();
+            autoscroll();
         });
 
         const observer = new MutationObserver(() => {
-            adjustImageSize();
+            adjustFileSize();
             autoscroll();
-            adjustMessageWidth();
+          //  adjustMessageWidth();
         });
         observer.observe(document.getElementById('messages'), { childList: true, subtree: true });
-    </script>    
-
-
-    <!-- load these files for chat.js to have access to them -->
+    </script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/mustache.js/4.0.0/mustache.min.js"></script> <!-- for rendering templates -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.1/moment.min.js"></script> <!-- for date and time manipulation -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/qs/6.10.1/qs.min.js"></script> <!-- for parsing query strings -->
     <script src="/js/socket.io.js"></script>
-    <script src="/js/chat.js"></script> <!-- ensure that the chat.js file is loaded last -->
+    <script src="https://cdn.jsdelivr.net/npm/marked@3.0.0/marked.min.js"></script>
+    <script type="module" src="/js/chat.js"></script>
 </body>
 </html>

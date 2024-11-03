@@ -1,12 +1,11 @@
 const socket = io() 
-
 // control elements inside compose message form
 // $ : convention to indicate that this is a DOM element.
 // DOM elements : elements that are accessible in the browser.
 
 // message form
 const $msgForm = document.querySelector('#message-form'); 
-const $msgFormInput = $msgForm.querySelector('input');
+const $msgFormInput = $msgForm.querySelector('textarea');
 const $msgFormButton = $msgForm.querySelector('button');
 
 
@@ -35,8 +34,8 @@ const { username, room, password } = Qs.parse(location.search, { ignoreQueryPref
 const currentUrl = new URL(window.location.href);
 const urlParams = new URLSearchParams(currentUrl.search);
 
-const user = urlParams.get('username');
-const r = urlParams.get('room');
+// const user = urlParams.get('username');
+// const r = urlParams.get('room');
 const p = urlParams.get('password');
 
 if (p) {
@@ -46,11 +45,32 @@ if (p) {
 }
 
 
+function render_msg(msg) {
+    let html = '';
+    if (msg.text !== null && msg.text !== undefined) {
+        msg.text = marked(msg.text) // remove unnecessary tags
+            .replace(/\n/g, "<br>")
+            .replace(/(<br>)+$/, "")
+        html = `
+                <div class="mb-3">
+                    <p>
+                        <span class="alias font-semibold">${msg.username}</span>
+                        <span class="stamp text-gray-400">${msg.time}</span>
+                    </p>
+                    <div class="msg">
+                        ${msg.text}
+                    </div>
+                </div>
+                `;
+        } else { html = Mustache.render(msgTemplate, msg); }
+    $messages.insertAdjacentHTML('beforeend', html); // insert the message into the div
+}
+
+
 
 // LISTEN FOR EVENTS FROM SERVER
 socket.on('message', (message) => {
-    const html = Mustache.render(msgTemplate, message); // render the template with the message
-    $messages.insertAdjacentHTML('beforeend', html); // insert the message into the div
+    render_msg(message);
 });
 socket.on('location', (location) => {
     const html = Mustache.render(locTemplate, location);
@@ -80,7 +100,7 @@ function typing() {
     // notify others that the user is no longer typing
     typingTimeout = setTimeout(() => { socket.emit('no_typing'); }, 1000); // user stop typing after 1 second
 }
-
+window.typing = typing; 
 // typing
 socket.on('userTyping', (data) => {
     const typingIndicator = document.getElementById('typing-indicator');
@@ -95,7 +115,7 @@ socket.on('userStoppedTyping', () => {
 });
 
 // event listener to message input for typing detection
-$msgFormInput.addEventListener('input', typing);
+$msgFormInput.addEventListener('textarea', typing);
 
 
 
@@ -103,8 +123,7 @@ $msgFormInput.addEventListener('input', typing);
 // SIDEBAR : room info and actions
 function setupEventListeners() {
     const $banButtons = document.querySelectorAll('.ban');
-    const $unbanButtons = document.querySelectorAll('.unban');
-    const $changepass = document.querySelector('#change-pw-form');
+    const $unbanButtons = document.querySelectorAll('.unban'); // select using
 
     $banButtons.forEach($banButton => {
         $banButton.addEventListener('click', () => {
@@ -124,30 +143,9 @@ function setupEventListeners() {
         });
     });
 
-    $changepass.addEventListener('submit', (e) => {
-        e.preventDefault();
-        if ($changepass.querySelector('input').value === '') { return; }
-        if (!confirm('Are you sure you want to change the password? Make sure you have alerted other Admin about this.')) { return; }
-        const new_password = e.target.elements['new-password'].value;
-        socket.emit('changepass', new_password, (error) => {
-            if (error) { alert(error); } else { alert('Password changed.'); }
-        });
-    });
-
-
-    const $log = document.getElementById("log");
     const $chat = document.getElementById("chat");
     const $close = document.getElementById("close");
 
-    $log.addEventListener("click", function() {
-        if (!confirm('Do you want to download the server log?')) { return; }
-        $log.setAttribute('disabled', 'disabled');
-        socket.emit('log', (e, { data, filename }) => {
-            $log.removeAttribute('disabled');
-            if (e) { alert(e); } 
-            else { downloadFile(data, filename, 'text/plain'); }
-        });
-    });
     $chat.addEventListener("click", function() {
         $chat.setAttribute('disabled', 'disabled');
         socket.emit('chat', (e, { data, filename }) => {
@@ -176,10 +174,11 @@ socket.on('room', (room_info) => {
 
 socket.on('load', (items) => {
     items.forEach((item) => {
-        const html = item.type === 'message' 
-            ? Mustache.render(msgTemplate, item) 
-            : Mustache.render(fileTemplate, item);
-        $messages.insertAdjacentHTML('beforeend', html);
+        let html = "";
+        if (item.type === "message") { render_msg(item); } else if (item.type === "file") { 
+            html = Mustache.render(fileTemplate, item); 
+            $messages.insertAdjacentHTML('beforeend', html);
+        }
     });
 });
 
@@ -222,7 +221,7 @@ $location.addEventListener('click', () => {
 $fileButton.addEventListener('click', () => {
     const file = $fileInput.files[0]; // get the file
     if (file) {
-        if (file.size > 900000) { return alert('File size must be less than 900kb.'); }
+        if (file.size > 50000000) { return alert('File can\'t be larger than 50MB.'); }
         const reader = new FileReader();
         reader.onload = function(event) {
             const all = {
@@ -232,6 +231,7 @@ $fileButton.addEventListener('click', () => {
                 isVideo: file.type.startsWith('video/')
             }
             socket.emit('file', all, (e) => { if (e) { alert(e); } });
+            console.log('sent file');
         };
         reader.onerror = function() { alert('Error reading file. Please try again.'); };
         reader.readAsDataURL(file); // read the file as a data URL, trigger the onload event

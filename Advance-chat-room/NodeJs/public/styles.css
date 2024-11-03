@@ -1,0 +1,47 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* media for phone */
+/* @media (max-wdith: 768px) {
+    #toggle-btn {
+        top: auto;
+        left: 50%;
+        transform: translateX(-50%);
+        order: 2
+    }
+} */
+
+.login-form {
+    background: url("/img/night_view.png"), #0e0024;
+    background-position: center;
+    background-size: cover;
+    justify-content: center;
+    text-align: center;
+}
+
+
+#file {
+    cursor: pointer;
+    padding: 10px;
+    border: 1px solid transparent;
+    border-radius: 10px;
+    color: white;
+    overflow: hidden;
+}
+
+#sidebar {
+    display: contents;
+}
+
+.msg {
+    max-width: 75%;
+    padding: 0.5rem;
+    border-radius: 0.5rem;
+    margin-bottom: 0.5rem;
+    background-color: #1e40af;
+    width: fit-content;
+    word-break: break-word;
+}
+
+

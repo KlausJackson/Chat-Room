@@ -1,37 +1,35 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <title>Chat Room</title> <!-- web title -->
+    <title>Chat Room</title>
     <link rel="icon" type="image/jpeg" href="img/logo.jpg">
-    <link rel="stylesheet" href="style_index.css">
-    <meta charset="UTF-8"> <!-- defines the character encoding for the document. -->
-    <meta http-equiv="X-UA-Compatible" content="IE-edge">
-    <!-- ensures that the page is displayed using the latest version of Internet 
-        Explorer's rendering engine, ignoring compatibility modes. -->
+    <link rel="stylesheet" href="output.css">
+    <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <!-- crucial for responsive web design. It sets the viewport's width to 
-        the device's width and ensures proper scaling on different screen sizes. -->
     <meta name="description" content="Join our chat room to connect and communicate with others.">
     <meta name="keywords" content="chat, communication, forum, discussion">
 </head>
 
-<body class="index">
-    <div class="login-form">
-        <div class="box">
+<body class="index bg-[#0e0024] text-white">
+    <div class="login-form flex items-center justify-center h-screen">
+        <div class="box bg-transparent rounded-lg shadow-lg p-5 border border-[#1e005d] backdrop-blur-md">
             <form action="/chat.html">
-                <div class="input1">
+                <div class="input1 mb-4">
                     <label>Enter username</label>
-                    <input type="text" id="username" name="username" placeholder="username" required>
+                    <input type="text" id="username" name="username" placeholder="username" required
+                    class="w-full p-2 bg-transparent border-b-2 border-white text-white outline-none">
                 </div>
-                <div class="input2">
+                <div class="input2 mb-4">
                     <label>Enter room number</label>
-                    <input type="text" name="room" placeholder="room" required> 
+                    <input type="text" name="room" placeholder="room" required
+                    class="w-full p-2 bg-transparent border-b-2 border-white text-white outline-none"> 
                 </div>
-                <div class="input3">
-                    <label for="password">Password</label>
-                    <input type="password" id="password" name="password" placeholder="password for ADMIN" required disabled>
+                <div class="input3 mb-4">
+                    <label for="password" class="block mb-1">Password</label>
+                    <input type="password" id="password" name="password" placeholder="password for ADMIN" required disabled 
+                    class="w-full p-2 bg-transparent border-b-2 border-white text-white outline-none">
                 </div>
-                <button type="submit">Join</button>
+                <button type="submit" class="w-full py-2 bg-[#0f5aab] hover:bg-[#30068c] text-white rounded-lg transition duration-300">Join</button>
             </form>
         </div>
     </div>

@@ -1,12 +1,4 @@
-// Description: 
-// This file contains functions for:
-// - creating messages, locations with timestamps
-// - store them.
-
-// chat history : messages, files, timestamp to json file
-// server log : log, timestamp to txt file
-const fs = require('fs').promises; // Use promises for async operations
-// log messages frequently -> asynchronous to avoid blocking the event loop
+// Functions to handle messages and files in the chat app
 const sqlite3 = require('sqlite3').verbose(); // verbose mode for detailed error messages
 const db = new sqlite3.Database('chat.db'); // create database object
 
@@ -18,18 +10,6 @@ const setup = () => {
     }); // db.serialize() to run multiple queries
 }; // create table if it doesn't exist
 
-
-
-const log = async (filename, text) => {
-    try { await fs.appendFile(filename, text + '\n', 'utf8'); } 
-    catch (e) { console.log('Error writing to log file:', e); }
-}
-const get_log = async (filename) => {
-    try {
-        const data = await fs.readFile(filename, 'utf8');
-        return data;
-    } catch (e) { console.log('Error reading log file:', e); }
-}
 
 const get_chat = async (room) => {
     const msgQuery = `select username, text, time from messages where room = ?`;
@@ -72,13 +52,14 @@ const load = (room) => {
 
 
 const getFile = (room, username, file) => {
+    console.log('in getfile 1')
     const { filename, data, isImage, isVideo } = file; // import file from utils
-    const all = { 
-        username: username, 
-        filename: filename, 
-        data: data, 
-        time: new Date().toLocaleString(), 
-        isImage: isImage, 
+    const all = {
+        username: username,
+        filename: filename,
+        data: data,
+        time: new Date().toLocaleString(),
+        isImage: isImage,
         isVideo: isVideo
     };
 
@@ -96,6 +77,7 @@ const getFile = (room, username, file) => {
             }
         });
         stmt.finalize();
+        console.log('in getfile 2')
     });
 }
 
@@ -106,7 +88,6 @@ const msg = (room, username, text) => {
         text,
         time: new Date().toLocaleString()
     };
-
     // insert message into the database
     return new Promise((resolve, reject) => {
         const stmt = db.prepare("insert into messages (username, text, time, room) values (?, ?, ?, ?)");
@@ -117,7 +98,6 @@ const msg = (room, username, text) => {
             }  else {  resolve(message); }
         });
         stmt.finalize();
-        
     });
 };
 
@@ -135,14 +115,12 @@ setup();
 module.exports = {
     msg,
     location_time,
-    log,
-    get_log,
     getFile,
     get_chat,
     load
 }
 
 
-db.close((err) => {
-    if (err) { console.error('Error closing the database:', err.message); }
-});
+// db.close((err) => {
+//     if (err) { console.error('Error closing the database:', err.message); }
+// });
