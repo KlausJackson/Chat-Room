@@ -1,8 +1,5 @@
 // Description: This file contains the users array and functions for users management.
-const fs = require('fs').promises; // Use promises for async operations
-// log messages frequently -> asynchronous to avoid blocking the event loop
-
-
+const fs = require('fs').promises;
 const getBanned = async () => {
     try {
         const dataBuffer = await fs.readFile('ban.json')

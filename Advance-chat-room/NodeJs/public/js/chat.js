@@ -19,7 +19,6 @@ const $messages = document.querySelector('#messages');
 // templates (innerHTML : the content of the element.) for rendering messages, locations and files
 const msgTemplate = document.querySelector('#message-template').innerHTML; 
 const locTemplate = document.querySelector('#location-template').innerHTML;
-const fileTemplate = document.querySelector('#file-template').innerHTML;
 // const $sidebarTempl = document.querySelector('#sidebar-template');
 // const sidebarTemplate = $sidebarTempl.innerHTML;
 const sidebarTemplate = document.querySelector('#sidebar-template').innerHTML;
@@ -46,12 +45,12 @@ if (p) {
 
 
 function render_msg(msg) {
-    let html = '';
-    if (msg.text !== null && msg.text !== undefined) {
-        msg.text = marked(msg.text) // remove unnecessary tags
-            .replace(/\n/g, "<br>")
-            .replace(/(<br>)+$/, "")
-        html = `
+	let html = "";
+	if (msg.text !== null && msg.text !== undefined) {
+		msg.text = marked(msg.text) // remove unnecessary tags
+			.replace(/\n/g, "<br>")
+			.replace(/(<br>)+$/, "");
+		html = `
                 <div class="mb-3">
                     <p>
                         <span class="alias font-semibold">${msg.username}</span>
@@ -62,23 +61,65 @@ function render_msg(msg) {
                     </div>
                 </div>
                 `;
-        } else { html = Mustache.render(msgTemplate, msg); }
-    $messages.insertAdjacentHTML('beforeend', html); // insert the message into the div
+	} else { html = Mustache.render(msgTemplate, msg); }
+	$messages.insertAdjacentHTML("beforeend", html); // insert the message into the div
+}
+
+function render_file(all) {
+    let html = `
+        <div class="file mb-3">
+            <p>
+                <span class="font-semibold">${all.username}</span>
+                <span class="text-gray-400">${all.time}</span>
+            </p>`;
+            
+    const type = all.filetype.split("/")[0];
+    console.log(all.filetype);
+	if (type === "image") {
+        html += `
+			<p><img src="${all.data}" alt="${all.filename}" class="max-w-full h-auto rounded-md" /></p>
+        </div>`;
+    } else if (type === "audio") {
+        html += `
+            <p>
+                <audio controls class="max-w-full h-auto rounded-md" style="width: 100%; height: 50px;">
+                    <source src="${all.data}" type="${all.filetype}">
+                    Your browser does not support the audio tag.
+                </audio>
+            </p>
+        </div>`;
+    } else if (type === "video") {
+        html += `
+            <p>
+                <video controls class="max-w-full h-auto rounded-md">
+                    <source src="${all.data}" type="${all.filetype}">
+                    Your browser does not support the video tag.
+                </video>
+            </p>
+        </div>`;
+    } else if (all.filetype === "application/pdf") {
+        html += `
+            <embed src="${all.data}" type="${all.filetype}" class="max-w-full h-auto rounded-md" style="width: 100%; height: 500px;"/> 
+        </div>`;
+    } else {
+        html += `
+            <p><a href="${all.data}" download="${all.filename}" 
+            target="_blank" class="text-blue-400">${all.filename}</a></p>
+        </div>`;
+    }
+    $messages.insertAdjacentHTML("beforeend", html);
 }
 
 
 
 // LISTEN FOR EVENTS FROM SERVER
-socket.on('message', (message) => {
-    render_msg(message);
-});
+socket.on('message', (message) => { render_msg(message); });
 socket.on('location', (location) => {
     const html = Mustache.render(locTemplate, location);
     $messages.insertAdjacentHTML('beforeend', html);
 });
 socket.on('file', (all) => {
-    const html = Mustache.render(fileTemplate, all);
-    $messages.insertAdjacentHTML('beforeend', html);
+    try { render_file(all); } catch (error) { console.error("Error rendering template:", error); }
 });
 
 
@@ -174,11 +215,8 @@ socket.on('room', (room_info) => {
 
 socket.on('load', (items) => {
     items.forEach((item) => {
-        let html = "";
-        if (item.type === "message") { render_msg(item); } else if (item.type === "file") { 
-            html = Mustache.render(fileTemplate, item); 
-            $messages.insertAdjacentHTML('beforeend', html);
-        }
+        if (item.type === "message") { render_msg(item); } 
+        else if (item.type === "file") { render_file(item); }
     });
 });
 
@@ -221,21 +259,30 @@ $location.addEventListener('click', () => {
 $fileButton.addEventListener('click', () => {
     const file = $fileInput.files[0]; // get the file
     if (file) {
-        if (file.size > 50000000) { return alert('File can\'t be larger than 50MB.'); }
+        if (file.size > 100000000) { return alert('File can\'t be larger than 100MB.'); }
         const reader = new FileReader();
         reader.onload = function(event) {
             const all = {
                 filename: file.name, 
                 data: event.target.result, //  base64 encoded string
-                isImage: file.type.startsWith('image/'),
-                isVideo: file.type.startsWith('video/')
+                filetype: file.type
             }
-            socket.emit('file', all, (e) => { if (e) { alert(e); } });
-            console.log('sent file');
+            let retries = 1;
+            function sendFile() {
+                socket.emit('file', all, (e) => {
+                    if (e) {
+                        if (retries > 0) {
+                            retries--;
+                            alert(`Error sending file. Retrying...`);
+                            sendFile();
+                        } else { alert(e); }
+                    } else { $fileInput.value = ""; }
+                });
+            }
+            sendFile();
         };
         reader.onerror = function() { alert('Error reading file. Please try again.'); };
         reader.readAsDataURL(file); // read the file as a data URL, trigger the onload event
-        $fileInput.value = '';
     } else { alert('Please select a file.'); }
 });
 

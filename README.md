@@ -15,7 +15,7 @@
 
 This repo first commit: [Jan 18, 2024](https://github.com/KlausJackson/Chat-Room/commits/main?after=2637ba4f72031e8af6516213d424f0ad5ac2f55d+69)
 
-I'm trying to develop a GUI version that runs on Windows/MacOS/Linux, I'll update when it's available. The development processs is gonna take a long time because I have other things to do. But I have developed a web version (inside Advance-chat-room folder). <br>
+Python version has been discontinued. I won't make any new update.
 
 ## Preview
 

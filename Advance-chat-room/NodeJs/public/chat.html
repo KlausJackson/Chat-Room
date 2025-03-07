@@ -51,29 +51,6 @@
             <p><a href="{{location}}" target="_blank" class="text-blue-400">Current location</a></p>
         </div>
     </script>
-    <script id="file-template" type="text/template">
-        <div class="file mb-3">
-            <p>
-                <span class="font-semibold">{{username}}</span>
-                <span class="text-gray-400">{{time}}</span>
-            </p>
-            <p>
-                {{#isImage}}
-                    <img src="{{data}}" alt="{{filename}}" class="max-w-full h-auto rounded-md" /> 
-                    <!--style="max-width: 100%; height: auto;" -->
-                {{/isImage}}
-                {{#isVideo}}
-                    <video controls class="max-w-full h-auto rounded-md">>
-                        <source src="{{data}}" type="video/mp4">
-                        Your browser does not support the video tag.
-                    </video>
-                {{/isVideo}} 
-                {{^isImage}}{{^isVideo}}
-                    <a href="{{data}}" download="{{filename}}" target="_blank" class="text-blue-400">{{filename}}</a>
-                {{/isVideo}}{{/isImage}}
-            </p>
-        </div>
-    </script>
     <script id="sidebar-template" type="text/html">
         <div class="relative">
             <button id="toggle-btn" onclick="toggleSidebar()" type="button" data-drawer-target="drawer-navigation" data-drawer-show="drawer-navigation" aria-controls="drawer-navigation" tabindex="0" title="Toggle Drawer"
@@ -154,13 +131,6 @@
             const drawer = document.getElementById('drawer-navigation');
             drawer.classList.toggle('-translate-x-full');
         }
-        // function adjustMessageWidth() {
-        //     const messages = document.getElementById('messages');
-        //     const messageElements = messages.querySelectorAll('.msg'); 
-        //     messageElements.forEach(msg => {
-        //         msg.style.maxWidth = `${messages.clientWidth}px`;
-        //     });
-        // }
         function adjustFileSize() {
             const messages = document.getElementById('messages');
             const files = messages.querySelectorAll('.file');
@@ -174,12 +144,10 @@
             messages.scrollTop = messages.scrollHeight;
         }
         window.addEventListener('load', () => {
-          //  adjustMessageWidth();
             adjustFileSize();
             autoscroll();
         });
         window.addEventListener('resize', () => {
-          //  adjustMessageWidth();
             adjustFileSize();
             autoscroll();
         });
@@ -187,7 +155,6 @@
         const observer = new MutationObserver(() => {
             adjustFileSize();
             autoscroll();
-          //  adjustMessageWidth();
         });
         observer.observe(document.getElementById('messages'), { childList: true, subtree: true });
     </script>

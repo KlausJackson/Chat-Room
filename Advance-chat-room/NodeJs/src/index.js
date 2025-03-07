@@ -5,20 +5,24 @@ const express = require('express');
 const socketio = require('socket.io');
 const Filter = require('bad-words');
 const fileUpload = require('express-fileupload');
-const { msg, location_time, getFile, get_chat, load } = require('./utils/msg'); // import msg functions from msg.js
-
-// import users management functions from file.js
-const { add,
-        remove,
-        get,
-        getIP,
-        getUsersInRoom,
-        banUser,
-        unbanUser,
-        getBanned,
-        changepass,
-        getpass 
-} = require('./utils/users.js'); 
+const { 
+    msg, 
+    location_time, 
+    getFile, get_chat, 
+    load 
+} = require("./utils/msg");
+const {
+	add,
+	remove,
+	get,
+	getIP,
+	getUsersInRoom,
+	banUser,
+	unbanUser,
+	getBanned,
+	changepass,
+	getpass,
+} = require("./utils/users.js"); 
 
 
 
@@ -27,31 +31,21 @@ const { add,
 const app = express();
 // when express does it behind the scenes, we don't have access to it.
 const server = http.createServer(app); // refactoring to parse it later.
-const io = socketio(server); // socket.io expects to be called with the raw http server.
+const io = socketio(server, { 
+    maxHttpBufferSize: 1e8 // 100 MB 
+}); // socket.io expects to be called with the raw http server.
 const port = process.env.port || 3000; 
 const publicpath = path.join(__dirname, '../public');
 
 app.use(express.static(publicpath));
-app.use(express.json({ limit: '50mb' }));
-app.use(express.urlencoded({ extended: true, limit: '50mb' }));
+app.use(express.json({ limit: '100mb' }));
+app.use(express.urlencoded({ extended: true, limit: '100mb' }));
 app.use(fileUpload({
-    limits: { fileSize: 50 * 1024 * 1024 }, // 50 MB
-    abortOnLimit: true, // if file size exceeds the limit, the request will be aborted with a 413 status code and the error message will be set to 'File too large'
+    limits: { fileSize: 100 * 1024 * 1024 }, // 100 MB
+    abortOnLimit: true,
     responseOnLimit: "File too large"
-})); // file upload middleware
+}));
 
-
-// function format() {
-//     const now = new Date();
-//     const year = now.getFullYear();
-//     const month = String(now.getMonth() + 1).padStart(2, '0'); // Months are 0-based
-//     const day = String(now.getDate()).padStart(2, '0');
-//     // const hours = String(now.getHours()).padStart(2, '0');
-//     // const minutes = String(now.getMinutes()).padStart(2, '0');
-//     // const seconds = String(now.getSeconds()).padStart(2, '0');
-    
-//     return `${year}-${month}-${day}`;
-// }
 
  
 async function update_info(user) {
@@ -131,22 +125,13 @@ io.on('connection', (socket) => {
 
     // handle file sharing
     socket.on('file', async (file, callback) => {
-        console.log("server");
+        if (!file) { return callback('No file uploaded.'); }
         try {
-            console.log("server: file received");
             const user = get(socket.id);
-            if (!user) {
-                console.log("server: user not found");
-                return;
-            }
-            console.log("server: processing file");
+            if (!user) { return; }
             io.to(user.room).emit("file", await getFile(user.room, user.username, file)); // Emit to all clients
-            console.log("server: sent file");
             callback();
-        } catch (error) {
-            console.error("Error processing file:", error);
-            callback("Error processing file."); // Send error back to client if needed
-        }        
+        } catch (error) { callback("Error processing file."); }        
     });
 
 
