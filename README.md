@@ -21,6 +21,8 @@ Python version has been discontinued. I won't make any new update.
 
 NodeJs
 
+No preview available yet. I will add a preview image of the project when I have the time to code a React frontend.
+
 ![NodeJs Preview](Advance-chat-room/NodeJs/example.png)
 
 Python
