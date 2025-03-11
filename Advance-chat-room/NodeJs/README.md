@@ -8,6 +8,8 @@ Frontend is ugly. I will make a frontend using ReactJS when I have the time.
 
 ## Requirements
 
+No requirements yet because this project only using sqlite, txt and json files to store data.
+
 ## Usage
 
 ## Features
