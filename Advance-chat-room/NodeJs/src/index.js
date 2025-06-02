@@ -2,8 +2,10 @@
 const path = require('path');
 const http = require('http');
 const express = require('express');
-const socketio = require('socket.io');
+//const socketio = require('socket.io');
+const { Server } = require('socket.io') 
 const Filter = require('bad-words');
+const cors = require('cors')
 const fileUpload = require('express-fileupload');
 const { 
     msg, 
@@ -29,9 +31,22 @@ const {
 //----------------------------------------------------------------------------------------
 // SET UP
 const app = express();
+
+app.use(
+	cors({
+		origin: 'http://localhost:3001', // Your React app's origin
+		methods: ['GET', 'POST']
+		// credentials: true // Uncomment if you use cookies/sessions and need them cross-origin
+	})
+)
+
 // when express does it behind the scenes, we don't have access to it.
 const server = http.createServer(app); // refactoring to parse it later.
-const io = socketio(server, { 
+const io = new Server(server, { 
+    cors: {
+        origin: "*", // Allow all origins, change to specific origin in production
+        methods: ["GET", "POST"]
+    },
     maxHttpBufferSize: 1e8 // 100 MB 
 }); // socket.io expects to be called with the raw http server.
 const port = process.env.port || 3000; 
