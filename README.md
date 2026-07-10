@@ -1,4 +1,4 @@
-# Popcorn Chat
+# Chat Room
 
 Real-time, ephemeral chat room application built with Node.js, Express, Socket.IO, React, MinIO and MongoDB.
 
