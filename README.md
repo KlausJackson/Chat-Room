@@ -1,51 +1,175 @@
-# Chat-Room
+# Popcorn Chat
 
-![License](https://img.shields.io/badge/License-MIT-blue.svg)
-[![GitHub top language](https://img.shields.io/github/languages/top/KlausJackson/Chat-Room?logo=github)](https://github.com/KlausJackson/Chat-Room)
-[![GitHub code size in bytes](https://img.shields.io/github/languages/code-size/KlausJackson/Chat-Room?logo=github)](https://github.com/KlausJackson/Chat-Room)
-[![GitHub issues](https://img.shields.io/github/issues/KlausJackson/Chat-Room?logo=github)](https://github.com/KlausJackson/Chat-Room)
-[![GitHub issues](https://img.shields.io/github/issues-closed/KlausJackson/Chat-Room?logo=github)](https://github.com/KlausJackson/Chat-Room)
-[![GitHub issues](https://img.shields.io/github/issues-pr/KlausJackson/Chat-Room?logo=github)](https://github.com/KlausJackson/Chat-Room)
-[![GitHub issues](https://img.shields.io/github/issues-pr-closed/KlausJackson/Chat-Room?logo=github)](https://github.com/KlausJackson/Chat-Room)
-![GitHub last commit](https://img.shields.io/github/last-commit/KlausJackson/Chat-Room?style=plastic)
+Real-time, ephemeral chat room application built with Node.js, Express, Socket.IO, React, MinIO and MongoDB.
 
-![Forks](https://img.shields.io/github/forks/KlausJackson/Chat-Room.svg)
-![Stars](https://img.shields.io/github/stars/KlausJackson/Chat-Room.svg)
-![Watchers](https://img.shields.io/github/watchers/KlausJackson/Chat-Room.svg)
+## Features
 
-This repo first commit: [Jan 18, 2024](https://github.com/KlausJackson/Chat-Room/commits/main?after=2637ba4f72031e8af6516213d424f0ad5ac2f55d+69)
+- **Ephemeral Rooms:** Rooms (and their messages) are soft-deleted from the user's perspective when the last user leaves.
+- **No Accounts Required:** Users are identified by their chosen display name and IP address for the session.
+- **Role Management:**
+  - **Owner:** The creator of the room. Can manage admins, change the room name, and configure settings.
+  - **Admins:** Designated by the owner with specific rights (kick, ban, lock, set bad words, change password).
+- **Hidden Status:** Owners and Admins can choose to hide their status badge from other users while retaining their permissions.
+- **File Sharing:** Upload and share files, images, and audio up to 100MB.
+- **Message Filtering:** Toggle a default bad-words filter or specify custom filtered words for a room.
+- **Search:** Search through the room's message history and shared files.
+- **UI:** A modern, dark-themed, glass-morphism UI.
 
-Python version has been discontinued. I won't make any new update.
+## Installation & Setup
 
-## Preview
+### Requirements
 
-NodeJs
+- Node.js (v18+ recommended)
+- MongoDB (Running locally or accessible via connection string - edit in `backend/.env`)
+- MinIO
 
-![NodeJs Preview](image.png)
+### Setup
 
-Python
+In each of the `backend` and `frontend` directories, run:
+```bash
+npm install
+```
 
-![Python Preview](Advance-chat-room/Python/example.png)
+Configure environment variables in `backend/.env` or `backend/src/config/index.js`:
+```
+PORT=3000
+MONGODB_URI=mongodb://127.0.0.1:27017/chat_room
+MINIO_ENDPOINT=localhost
+MINIO_PORT=9000
+MINIO_USE_SSL=false
+MINIO_ACCESS_KEY=minioadmin
+MINIO_SECRET_KEY=minioadmin
+MINIO_BUCKET=chat-room
+```
 
-## How To Contact Me
+Configure environment variables in `frontend/.env`:
+```
+PORT=3001
+REACT_APP_BACKEND_URL=http://localhost:3000
+```
 
-[![Patreon](https://img.shields.io/badge/Patreon-AC7AC2?style=for-the-badge&logo=patreon&logoColor=white)](patreon.com/KlausJackson)
-[![Buy Me A Coffee](https://img.shields.io/badge/BuyCoffee-FFFF00?style=for-the-badge&logo=buymeacoffee&logoColor=black)](https://buymeacoffee.com/KlausJackson)
-[![LinkedIn](https://img.shields.io/badge/LinkedIn-0077B5?style=for-the-badge&logo=linkedin&logoColor=white)](https://www.linkedin.com/in/KlausJackson/)
-[![Gmail](https://img.shields.io/badge/Gmail-D14836?style=for-the-badge&logo=gmail&logoColor=white)](mailto:KlausJackson2@gmail.com)
-[![Steam](https://img.shields.io/badge/Steam-000050?style=for-the-badge&logo=steam&logoColor=white)](https://steamcommunity.com/id/KlausJackson/)
-[![Twitter](https://img.shields.io/badge/Twitter-0044BB?style=for-the-badge&logo=twitter&logoColor=white)](https://twitter.com/Klaus_Jackson2)
+Start the server and client in separate terminal windows:
+```bash
+npm start
+```
 
-## Requirements, Usage, Features
+*Soft Delete:* The backend uses soft-delete.
+- When the last user leaves a room, the `Room` and its `Messages` are marked with a `deletedAt` timestamp.
+- Handlers filter queries with `deletedAt: null` to hide closed rooms from users.
 
-For NodeJs: [README.md](Advance-chat-room/NodeJs/README.md)
-For Python: [README.md](Advance-chat-room/Python/README.md)
+## Project Architecture
 
-## The End
+### Backend
 
-If you have any problem while running the code or any ideas to improve it, feel free to file an issue.
+Implements a RESTful API with WebSocket support for real-time communication. The backend is built with Node.js, Express, Socket.IO, MongoDB for data storage and MinIO for object storage.
 
-I will never add a function/feature to make someone an admin, there can only be one boss in a server.
-There will be updates for this repo in the future (bugs fixing if there's any, more features if I have ideas and time).
+```
+└── backend
+    └── src
+        └── config
+            ├── index.js
+        └── handlers
+            └── admin
+                ├── ban.js
+                ├── changePassword.js
+                ├── index.js
+                ├── kick.js
+                ├── makeAdmin.js
+                ├── removeAdmin.js
+                ├── setFilter.js
+                ├── setRights.js
+                ├── transferOwnership.js
+            └── message
+                ├── index.js
+                ├── search.js
+                ├── send.js
+            └── room
+                ├── create.js
+                ├── index.js
+                ├── join.js
+                ├── leave.js
+            ├── index.js
+        └── models
+            ├── BannedIP.js
+            ├── Message.js
+            ├── Room.js
+            ├── User.js
+        └── utils
+            ├── socketHelpers.js
+            ├── storage.js
+            ├── verifyAdmin.js
+        ├── database.js
+        ├── index.js
+    ├── package-lock.json
+    └── package.json
+```
 
-That's all I got. Enjoy!
+#### REST Endpoints
+
+*   **`POST /upload`**: Handles multipart/form-data file uploads.
+    *   **Parameters**:
+        *   `file`: The file buffer to upload.
+        *   `roomId`: The destination room database ID.
+        *   `socketId`: Active socket ID of the uploading user.
+    *   **Response**: `200 OK` with JSON `{ success: true, message: { ... } }` or error code.
+*   **`GET /uploads/:roomId/:fileName`**: Streams the requested file from MinIO with proper headers (`Content-Type`, `Content-Disposition: inline`).
+*   **`GET /health`**: Simple health check returning `{ status: "ok" }`.
+
+#### Socket.IO API
+
+##### Client-to-Server (Emit)
+
+*   `createRoom` `{ roomName, username, roomPassword }` -> Returns room details (ID, name) or error.
+*   `joinRoom` `{ roomId, username, roomPassword }` -> Adds the user to the room, returns room details.
+*   `leaveRoom` -> Leaves the active room.
+*   `sendMessage` `{ messageText }` -> Sends a text message to the room.
+*   `searchMessages` `{ query }` -> Searches room history (messages/files/usernames).
+*   `kickUser` `{ socketIdToKick, reason }` -> Kicks a user from the room.
+*   `adminBanIP` `{ ipToBan, reason }` -> Bans a user's IP address.
+*   `adminUnbanIP` `{ ipToUnban }` -> Unbans an IP address.
+*   `toggleLockRoom` -> Locks or unlocks a room.
+*   `adminMakeAdmin` `{ targetUserSocketId }` -> Promotes an active user to Admin.
+*   `removeAdmin` `{ targetSocketId }` -> Demotes an Admin.
+*   `setAdminRights` `{ targetSocketId, newRights }` -> Configures rights for an Admin.
+*   `adminChangePassword` `{ newPassword }` -> Changes or removes the room password.
+*   `adminSetFilteredWords` `{ filteredWords }` -> Configures custom filtered words.
+*   `adminToggleDefaultFilter` -> Toggles the default library word filter.
+*   `changeRoomName` `{ newName }` -> Renames the room.
+*   `toggleStatusVisibility` -> Toggles whether Admin/Owner badges are visible.
+*   `transferOwnership` `{ targetUserSocketId }` -> Transfers ownership of the room.
+
+##### Server-to-Client (Listen)
+
+*   `loadMessages` -> Emits last 50 messages/files upon joining a room.
+*   `newMessage` -> Broadcasts any new incoming message or file.
+*   `roomDetailsUpdated` -> Broadcasts public room info and user roles (with hidden status masked).
+*   `adminRoomDetailsUpdated` -> Broadcasts detailed room configuration and raw IP addresses to authorized admins.
+*   `personalStatus` -> Sends current user their true role state and available action rights.
+*   `kicked` -> Sent to a user when they are kicked or banned.
+
+### Frontend
+
+Uses React, Socket.IO client, TailwindCSS.
+
+```
+└── frontend
+    └── src
+        └── components
+            ├── ChatRoom.js
+            ├── MessageForm.js
+            ├── MessageItem.js
+            ├── MessageList.js
+            ├── Sidebar.js
+        └── pages
+            ├── Home.js
+        └── services
+            ├── socket.js
+        ├── App.css
+        ├── App.js
+        ├── index.js
+        ├── logo.svg
+    ├── .env
+    ├── package-lock.json
+    └── package.json
+```
+
